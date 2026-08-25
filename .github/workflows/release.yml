@@ -122,14 +122,9 @@ jobs:
       - name: Post-release smoke test (npx from a clean cwd — the verify gate)
         run: |
           set -eu
-          # This repo ships its skills under their own names and no /commands.
-          # The assertions here were inherited from a single-skill template and
-          # looked for skills/telegram-dev/SKILL.md and commands/telegram-dev.md —
-          # neither of which this installer has ever produced. Nothing caught it
-          # because v0.1.0 was never tagged and the workflow had never run.
-          #
-          # Derived from the repo, not hardcoded: a seventh skill must not need
-          # an edit here to be covered.
+          # Derived from the repo, never hardcoded: a fourth skill must not need
+          # an edit here to be covered. The list this asserts against is the list
+          # the installer reads from.
           SRC="$PWD/plugins/telegram-dev/skills"
           NAMES="$(ls -1 "$SRC")"
           test -n "$NAMES"
@@ -140,9 +135,14 @@ jobs:
             test -f "$HOME/.claude/skills/$n/SKILL.md" \
               || { echo "missing skill after install: $n"; exit 1; }
           done
-          # references travel too — the skills are useless without them
-          test -f "$HOME/.claude/skills/stripe-billing/references/webhook-events.md"
-          test -f "$HOME/.claude/skills/crypto-payments/references/heleket-provider.md"
+          # A skill's references and fixtures travel with it, or the skill arrives
+          # as a body full of links to nothing. One of each, named rather than
+          # counted, because a missing directory is the failure being tested.
+          test -f "$HOME/.claude/skills/telegram-bots/references/updates-and-delivery.md"
+          test -f "$HOME/.claude/skills/telegram-userbots/references/rate-and-flood.md"
+          test -f "$HOME/.claude/skills/telegram-miniapps/fixtures/verify_initdata.py"
+          # And the shipped fixture still runs from the installed copy.
+          python3 "$HOME/.claude/skills/telegram-miniapps/fixtures/verify_initdata.py"
           echo "OK: released ${{ steps.t.outputs.tag }} installs $(echo "$NAMES" | wc -w | tr -d ' ') skills cleanly via npx"
 
   publish:
