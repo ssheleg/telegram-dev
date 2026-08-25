@@ -1,3 +1,21 @@
+## v0.1.4 — a first publish takes longer to propagate than the check allowed
+
+`@ssheleg/telegram-dev@0.1.3` published correctly — `npm publish` printed
+`+ @ssheleg/telegram-dev@0.1.3` and signed provenance into the transparency log —
+and the release still went red, on the step that polls the registry for three
+minutes. A **first** publish creates the package document, which propagates more
+slowly than a new version of one that already exists; the replica served nothing
+for over three minutes and then served it.
+
+So the poll runs for ten minutes, and it now tells the two cases apart: *the
+registry does not know this package at all* and *it knows the package and not this
+version* are different problems, and the first one is worth saying is a
+propagation check rather than a publish check — because the publish had already
+succeeded when this fired.
+
+Also in this release: the README records that DeepSeek Harness loads this pack
+with no plugin to write.
+
 ## v0.1.3 — the coordination snapshot exists, and something links it
 
 `agent-sync check` wants two things beyond a parsed config: a setup snapshot, and
