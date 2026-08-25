@@ -1,3 +1,22 @@
+## v0.1.1 — the coordination config ships with the clone, and CI stopped lying about installers
+
+`.claude/agent-sync.json` existed only on the machine that wrote it, which
+protects nobody who clones the repository; the umbrella's validator refuses a
+member without one, and it was right to.
+
+Two CI steps were adapted from `sheleg-dev` and still asserted that pack's files.
+The installer step passed `--no-claude`, a flag belonging to the umbrella
+launcher, so the first run exited 2 on a step about installers with nothing wrong
+with the installer. The release smoke test looked for
+`crypto-payments/references/heleket-provider.md`. Both now derive their list from
+this tree and run the shipped `initData` fixture from the installed copy — a
+skill whose references did not travel arrives as a body full of links to nothing.
+
+And the version plant in the validator's own self-test named a literal `0.1.0`,
+so it stopped planting anything the moment the version moved. It reported itself
+`BROKEN` rather than passing, which is the behaviour that found it; it now
+derives the number it bumps.
+
 ## v0.1.0 — three surfaces, and the line between them
 
 Telegram is three different products behind one brand, and the most expensive

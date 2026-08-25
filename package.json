@@ -1,6 +1,6 @@
 {
   "name": "@ssheleg/telegram-dev",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Three skills for building on Telegram, separated by which API each one speaks: the official HTTP Bot API for bots, MTProto (Telethon) for user accounts, and Mini Apps for the web layer whose whole security model is one signed blob.",
   "bin": {
     "telegram-dev": "bin/telegram-dev.js"

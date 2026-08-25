@@ -311,8 +311,13 @@ PLANTS = (
     ("a link to a reference that does not exist",
      "plugins/telegram-dev/skills/telegram-userbots/SKILL.md",
      lambda t: t.replace("references/rate-and-flood.md", "references/nope.md"), "does not exist"),
+    # Derived, never written: a plant naming a literal version stops planting
+    # anything the first time the package is released, and reports itself BROKEN
+    # rather than passing — which is how this one was found, at v0.1.1.
     ("a version that drifted in one file", "package.json",
-     lambda t: t.replace('"version": "0.1.0"', '"version": "0.1.1"', 1), "version drift"),
+     lambda t: re.sub(r'("version":\s*")(\d+)\.(\d+)\.(\d+)(")',
+                      lambda m: f"{m.group(1)}{m.group(2)}.{int(m.group(3)) + 1}.0{m.group(5)}",
+                      t, count=1), "version drift"),
     ("a fixture the skill stops naming",
      "plugins/telegram-dev/skills/telegram-miniapps/SKILL.md",
      lambda t: t.replace("fixtures/verify_initdata.py", "fixtures/gone.py"), "which is not there"),
