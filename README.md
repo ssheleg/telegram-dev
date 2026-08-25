@@ -7,6 +7,10 @@
 
 **[Docs, and every skill →](https://skills.sshlg.me/)** · [this skill's page](https://skills.sshlg.me/skills/telegram-dev/) · [follow @sshlg93 on X](https://x.com/intent/follow?screen_name=sshlg93)
 
+Loads in **DeepSeek Harness** (`dsh`) with **no plugin to write**: it reads the
+Agent Skills standard directly, scanning `~/.agents/skills` — where `npx skills
+add` puts this pack — at rank 500.
+
 **Telegram is three products behind one brand.** A bot token, a user account and
 a web page in a WebView have different capabilities, different limits and very
 different ways of losing money or an account. **Three skills**, one per surface,
