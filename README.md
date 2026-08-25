@@ -1,0 +1,100 @@
+# telegram-dev
+
+[![validate](https://github.com/ssheleg/telegram-dev/actions/workflows/validate.yml/badge.svg)](https://github.com/ssheleg/telegram-dev/actions/workflows/validate.yml)
+[![npm](https://img.shields.io/npm/v/%40ssheleg%2Ftelegram-dev)](https://www.npmjs.com/package/@ssheleg/telegram-dev)
+[![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![site](https://img.shields.io/badge/docs-skills.sshlg.me-8ab0ff)](https://skills.sshlg.me/skills/telegram-dev/)
+
+**[Docs, and all 9 skills →](https://skills.sshlg.me/)** · [this skill's page](https://skills.sshlg.me/skills/telegram-dev/) · [follow @sshlg93 on X](https://x.com/intent/follow?screen_name=sshlg93)
+
+**Telegram is three products behind one brand.** A bot token, a user account and
+a web page in a WebView have different capabilities, different limits and very
+different ways of losing money or an account. **Three skills**, one per surface,
+so an agent picks the right one before it writes anything.
+
+Part of the [ssheleg skill family](https://skills.sshlg.me/).
+
+---
+
+## The three, and the line between them
+
+| Skill | The API it speaks | Reach for it when |
+|---|---|---|
+| **`telegram-bots`** | official HTTP **Bot API** | a bot users add to chats — no phone number, no ban risk |
+| **`telegram-userbots`** | **MTProto** via Telethon | the job needs a user account, and you have written down why |
+| **`telegram-miniapps`** | the **Mini App** web layer | a page inside Telegram, whose whole auth is one signed blob |
+
+The boundary is not stylistic. A bot cannot read history from before it joined,
+act on behalf of a person, or download a file over 20 MB — and a user account can
+be limited or banned in a way a token cannot. `telegram-userbots` opens with the
+decision of whether you need one at all, because the cheapest answer is usually a
+local Bot API server.
+
+## What each one owns
+
+- **`telegram-bots`** — `update_id` as the only idempotency key; the
+  `allowed_updates` default that silently drops three update types; the webhook
+  secret header; rate limits as a design constraint; Telegram Stars, the
+  ten-second pre-checkout window, and granting on `successful_payment`.
+- **`telegram-userbots`** — the session file as a credential equal to the
+  password; `FloodWaitError` as a number rather than a condition; pinning across
+  minor releases that move session and entity-cache behaviour; `takeout` for bulk
+  export; the ban risk, stated plainly.
+- **`telegram-miniapps`** — verifying `initData` with HMAC-SHA256 and the
+  `WebAppData` derivation, the `auth_date` window, the Ed25519 path for a third
+  party, exchanging the blob for your own session, and the SDK package whose name
+  moved.
+
+## Runnable, not described
+
+```bash
+python3 plugins/telegram-dev/skills/telegram-miniapps/fixtures/verify_initdata.py
+python3 plugins/telegram-dev/skills/telegram-bots/fixtures/update_delivery.py --self-test
+```
+
+Standard library only, no network. The first is the `initData` verifier to copy,
+with nine checks watching it refuse a tampered user id, a stale `auth_date`, a
+re-serialised `user` field and a reversed key derivation. The second holds four
+delivery invariants and, under `--self-test`, removes one rule at a time and
+requires each invariant to go red.
+
+## Install
+
+```bash
+npx skills add ssheleg/telegram-dev
+```
+
+```bash
+claude plugin marketplace add ssheleg/telegram-dev && claude plugin install telegram-dev@telegram-dev
+```
+
+The whole family in one command:
+
+```bash
+npx sshlg-skills install
+```
+
+## Development
+
+<!-- commands-run-in: a clone -->
+These run in a clone of this repository; the published package ships `bin/` and
+`plugins/` only.
+
+```bash
+npm test              # the validator, then both fixtures including the mutant matrix
+npm run test:negatives # plant each defect and require the validator to refuse it
+```
+
+Contributions welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). To report a
+vulnerability, see [SECURITY.md](SECURITY.md).
+
+## Author
+
+Built by ssheleg — [sshlg.me](https://sshlg.me)
+
+- X / Twitter — [@sshlg93](https://x.com/sshlg93) ·
+  [follow in one click](https://x.com/intent/follow?screen_name=sshlg93)
+
+## License
+
+MIT © 2026 ssheleg.

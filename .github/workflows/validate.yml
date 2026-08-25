@@ -1,0 +1,53 @@
+name: validate
+
+on:
+  push:
+  pull_request:
+  # Callable, so `release.yml` gates a publish on THIS suite rather than on a copy
+  # of it. A second home for the gate is a gate that drifts at one of them.
+  workflow_call:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Tests — the same entry point a human uses
+        run: npm test
+
+      - name: Negative self-test — every guard watched refusing its own defect
+        # The half that makes the validator a gate. It plants each defect in a
+        # copy of the tree and fails if the validator still passes.
+        run: npm run test:negatives
+
+      - name: The fixtures' mutant matrix
+        # Stated separately from `npm test` because a green fixture whose mutants
+        # cannot kill it proves nothing, and the distinction is worth seeing in
+        # the run's own step list.
+        run: |
+          python3 plugins/telegram-dev/skills/telegram-bots/fixtures/update_delivery.py --self-test
+          python3 plugins/telegram-dev/skills/telegram-miniapps/fixtures/verify_initdata.py
+
+      - name: Manifests — both strict validations
+        run: |
+          npm install -g @anthropic-ai/claude-code
+          claude plugin validate . --strict
+          claude plugin validate plugins/telegram-dev --strict
+
+      - name: The installer runs against a fresh HOME
+        run: |
+          mkdir -p /tmp/fakehome
+          HOME=/tmp/fakehome node bin/telegram-dev.js --no-claude
+          ls /tmp/fakehome/.agents/skills 2>/dev/null || ls /tmp/fakehome/.claude/skills 2>/dev/null || true
+
+      - name: What npm would publish
+        run: npm pack --dry-run

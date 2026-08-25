@@ -1,0 +1,50 @@
+{
+  "name": "@ssheleg/telegram-dev",
+  "version": "0.1.0",
+  "description": "Three skills for building on Telegram, separated by which API each one speaks: the official HTTP Bot API for bots, MTProto (Telethon) for user accounts, and Mini Apps for the web layer whose whole security model is one signed blob.",
+  "bin": {
+    "telegram-dev": "bin/telegram-dev.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "bin",
+    "plugins",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "SECURITY.md"
+  ],
+  "repository": "github:ssheleg/telegram-dev",
+  "homepage": "https://skills.sshlg.me/skills/telegram-dev/",
+  "license": "MIT",
+  "author": {
+    "name": "ssheleg",
+    "url": "https://x.com/sshlg93"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "keywords": [
+    "telegram",
+    "telegram-bot",
+    "bot-api",
+    "telethon",
+    "mtproto",
+    "userbot",
+    "telegram-mini-apps",
+    "mini-app",
+    "initdata",
+    "telegram-stars",
+    "aiogram",
+    "grammy",
+    "claude-code",
+    "cursor",
+    "agent-skills"
+  ],
+  "scripts": {
+    "test": "python3 test/validate.py && python3 plugins/telegram-dev/skills/telegram-miniapps/fixtures/verify_initdata.py && python3 plugins/telegram-dev/skills/telegram-bots/fixtures/update_delivery.py --self-test",
+    "test:negatives": "python3 test/validate.py --self-test"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "name": "telegram-dev",
+  "owner": {
+    "name": "ssheleg",
+    "url": "https://github.com/ssheleg"
+  },
+  "description": "Three skills for building on Telegram, separated by which API each one speaks: the official HTTP Bot API for bots, MTProto (Telethon) for user accounts, and Mini Apps for the web layer whose whole security model is one signed blob.",
+  "plugins": [
+    {
+      "$schema": "https://json.schemastore.org/claude-code-plugin.json",
+      "name": "telegram-dev",
+      "displayName": "Telegram Dev",
+      "description": "Telegram development, split by the API each surface actually speaks. telegram-bots covers the official HTTP Bot API \u2014 update_id as the only idempotency key, the allowed_updates default that drops three types in silence, the webhook secret header, rate limits as a design constraint, and Telegram Stars with its ten-second pre-checkout window. telegram-userbots covers MTProto and Telethon \u2014 the session file as a credential equal to the password, FloodWaitError as the API working rather than failing, and the account-ban risk a bot token does not carry. telegram-miniapps covers initData verification, the algorithm shipped as a runnable fixture, and the SDK package whose name moved.",
+      "version": "0.1.0",
+      "author": {
+        "name": "ssheleg",
+        "url": "https://x.com/sshlg93"
+      },
+      "homepage": "https://skills.sshlg.me/skills/telegram-dev/",
+      "repository": "https://github.com/ssheleg/telegram-dev",
+      "license": "MIT",
+      "keywords": [
+        "telegram",
+        "telegram-bot",
+        "bot-api",
+        "telethon",
+        "mtproto",
+        "userbot",
+        "telegram-mini-apps",
+        "mini-app",
+        "initdata",
+        "telegram-stars",
+        "aiogram",
+        "grammy",
+        "claude-code",
+        "cursor",
+        "agent-skills"
+      ],
+      "source": "./plugins/telegram-dev",
+      "category": "development"
+    }
+  ]
+}
