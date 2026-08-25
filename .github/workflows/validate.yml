@@ -43,11 +43,25 @@ jobs:
           claude plugin validate . --strict
           claude plugin validate plugins/telegram-dev --strict
 
-      - name: The installer runs against a fresh HOME
+      - name: The installer runs against a fresh HOME, and the rerun skips
         run: |
-          mkdir -p /tmp/fakehome
-          HOME=/tmp/fakehome node bin/telegram-dev.js --no-claude
-          ls /tmp/fakehome/.agents/skills 2>/dev/null || ls /tmp/fakehome/.claude/skills 2>/dev/null || true
+          set -eu
+          # Asserted against the tree, not against a written list: a fourth skill
+          # is covered without editing this step. The installer takes no flags
+          # beyond --force and --help; passing one it does not know exits 2, which
+          # is how this step first went red.
+          NAMES="$(ls -1 plugins/telegram-dev/skills)"
+          export HOME="$(mktemp -d)"
+          node bin/telegram-dev.js
+          for n in $NAMES; do
+            test -f "$HOME/.claude/skills/$n/SKILL.md" || { echo "missing: $n"; exit 1; }
+          done
+          test -f "$HOME/.claude/skills/telegram-miniapps/fixtures/verify_initdata.py"
+          python3 "$HOME/.claude/skills/telegram-miniapps/fixtures/verify_initdata.py"
+          # A second run must not rewrite what is already there.
+          node bin/telegram-dev.js | grep -q 'skip' \
+            || { echo "the rerun did not skip anything"; exit 1; }
+          echo "OK: $(echo "$NAMES" | wc -w | tr -d ' ') skills installed, rerun skipped"
 
       - name: What npm would publish
         run: npm pack --dry-run
