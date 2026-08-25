@@ -1,3 +1,15 @@
+## v0.1.3 — the coordination snapshot exists, and something links it
+
+`agent-sync check` wants two things beyond a parsed config: a setup snapshot, and
+an agent instruction file that links it — because an agent that cannot find the
+snapshot infers the pipeline instead. The umbrella runs that check across every
+repository declaring coordination, and this one was the ninth and the only one
+failing it.
+
+`docs/AGENT_SYNC.md` is now generated rather than written, and `CLAUDE.md` links
+it beside the four invariants this repository holds and the date every Telegram
+fact in the skills was read.
+
 ## v0.1.2 — the gate now refuses a dropped routing trigger
 
 The family's routing hook fires on phrases these descriptions have to keep, and a
