@@ -1,3 +1,18 @@
+## v0.1.2 — the gate now refuses a dropped routing trigger
+
+The family's routing hook fires on phrases these descriptions have to keep, and a
+member releases BEFORE the umbrella re-pins — so a member that drops one ships
+green and the umbrella finds out minutes after the tag. This gate now asks the
+umbrella's own checker, reading the module the hook itself calls, and discloses
+rather than passing when no umbrella sits above the checkout.
+
+Adding it exposed a hole in the umbrella's plant sweep, fixed there: the plant
+removed the phrase case-sensitively, and this pack's description says *"auditing a
+Telegram bot"* in prose while listing `"telegram bot"` as a trigger. The quoted
+one went, the prose one stayed, the guard correctly reported the phrase as still
+advertised — and the sweep read that as the guard failing to fire. Nine of nine
+members refuse the drop now.
+
 ## v0.1.1 — the coordination config ships with the clone, and CI stopped lying about installers
 
 `.claude/agent-sync.json` existed only on the machine that wrote it, which

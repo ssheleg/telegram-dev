@@ -295,6 +295,38 @@ def check_ci_runs_the_gate():
         fail("release.yml does not gate on validate.yml — a release can publish over a red suite")
 
 
+@check
+def check_routed_triggers_still_advertised():
+    """The family's routing hook fires on words these descriptions have to keep.
+
+    A member can ship green on its own gate having dropped a phrase that is a live
+    trigger in the umbrella's `lib/triggers.js` — and it releases BEFORE the umbrella
+    re-pins, so the umbrella finds out minutes after the tag. A hook firing on a promise
+    nobody made is the defect.
+
+    The table is NOT copied here: the umbrella's own checker is asked, reading the module
+    the hook itself calls, so there is no duplicate to drift. With no umbrella above this
+    checkout — the ordinary state of a standalone clone, and of this repository's own CI —
+    it discloses instead of passing, because a check that cannot look must never read as
+    one that looked.
+    """
+    script = ROOT.parent.parent / "test" / "advertised_check.js"
+    if not script.is_file():
+        note("routed triggers — no sshlg-skills umbrella above this checkout")
+        return
+    try:
+        proc = subprocess.run(["node", str(script), "--member", "telegram-dev",
+                               "--root", str(ROOT)],
+                              capture_output=True, text=True, timeout=60)
+    except (OSError, subprocess.SubprocessError) as exc:
+        note(f"routed triggers — could not run the umbrella's checker ({exc})")
+        return
+    if proc.returncode == 1:
+        fail((proc.stdout + proc.stderr).strip())
+    elif proc.returncode != 0:
+        note(f"routed triggers — {(proc.stderr or 'the checker could not look').strip()}")
+
+
 # ------------------------------------------------------------------- self-test
 
 PLANTS = (
