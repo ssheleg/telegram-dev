@@ -5,6 +5,16 @@
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![site](https://img.shields.io/badge/docs-skills.sshlg.me-8ab0ff)](https://skills.sshlg.me/skills/telegram-dev/)
 
+**Build Telegram bots, userbots and Mini Apps on the right API, with their delivery and authentication risks explicit.**
+
+```bash
+npx skills add ssheleg/telegram-dev
+```
+
+Ask: `Build a Bot API webhook that safely handles duplicate updates.`
+
+**[Detailed docs →](https://skills.sshlg.me/skills/telegram-dev/)**
+
 **[Docs, and every skill →](https://skills.sshlg.me/)** · [this skill's page](https://skills.sshlg.me/skills/telegram-dev/) · [follow @sshlg93 on X](https://x.com/intent/follow?screen_name=sshlg93)
 
 Loads in **DeepSeek Harness** (`dsh`) with **no plugin to write**: it reads the

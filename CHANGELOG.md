@@ -1,3 +1,11 @@
+## v0.1.5 — three Telegram surfaces, one public review contract
+
+The pack now carries a root skill card, positive and near-miss routing cases,
+three behavioral scenarios and an explicit unexecuted-results ledger. The README
+opens with one install and a duplicate-update request, the generated social
+preview is committed, and CI runs the pinned house audit plus a planted eval
+schema failure. Bot API, MTProto and Mini App behavior are unchanged.
+
 ## v0.1.4 — a first publish takes longer to propagate than the check allowed
 
 `@ssheleg/telegram-dev@0.1.3` published correctly — `npm publish` printed

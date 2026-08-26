@@ -1,0 +1,51 @@
+{
+  "note": "Score each expected_behavior line independently. These are authored evaluations, not executed results.",
+  "scenarios": [
+    {
+      "id": "s01",
+      "title": "Bot update delivery",
+      "skills": [
+        "telegram-bots"
+      ],
+      "query": "Implement a webhook consumer that may receive the same Telegram update more than once.",
+      "files": [],
+      "expected_behavior": [
+        "Uses update_id as the delivery idempotency key",
+        "Claims the update before side effects",
+        "Validates the webhook secret header",
+        "Handles retries and rate limits as normal delivery behavior"
+      ]
+    },
+    {
+      "id": "s02",
+      "title": "Userbot credential",
+      "skills": [
+        "telegram-userbots"
+      ],
+      "query": "Run a Telethon importer from a user account in production.",
+      "files": [],
+      "expected_behavior": [
+        "First checks whether a user account is actually required",
+        "Treats the session file as a logged-in credential",
+        "Handles FloodWaitError for the exact requested duration",
+        "Names revocation, account-ban and library-version risks"
+      ]
+    },
+    {
+      "id": "s03",
+      "title": "Mini App authentication",
+      "skills": [
+        "telegram-miniapps"
+      ],
+      "query": "Authenticate a Mini App request and reject replayed or tampered initData.",
+      "files": [],
+      "expected_behavior": [
+        "Verifies the original signed query string server-side",
+        "Does not trust initDataUnsafe as authentication",
+        "Checks auth_date against an explicit freshness window",
+        "Uses the correct bot-token or third-party Ed25519 verification path"
+      ]
+    }
+  ]
+}
+
