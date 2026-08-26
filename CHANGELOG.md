@@ -1,3 +1,8 @@
+## v0.1.6 — shared guards identify their owner
+
+The eval and social-preview validators now declare their umbrella-owned shared
+mechanisms, making their family provenance explicit and machine-checkable.
+
 ## v0.1.5 — three Telegram surfaces, one public review contract
 
 The pack now carries a root skill card, positive and near-miss routing cases,

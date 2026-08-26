@@ -5,7 +5,7 @@
 | Field | Value |
 |---|---|
 | Pack | `telegram-dev` |
-| Version | `0.1.5` |
+| Version | `0.1.6` |
 | Skills | `telegram-bots`, `telegram-userbots`, `telegram-miniapps` |
 | License | MIT |
 | Source | https://github.com/ssheleg/telegram-dev |
