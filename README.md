@@ -4,6 +4,7 @@
 [![npm](https://img.shields.io/npm/v/%40ssheleg%2Ftelegram-dev)](https://www.npmjs.com/package/@ssheleg/telegram-dev)
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![site](https://img.shields.io/badge/docs-skills.sshlg.me-8ab0ff)](https://skills.sshlg.me/skills/telegram-dev/)
+[![skills.sh](https://skills.sh/b/ssheleg/telegram-dev)](https://skills.sh/ssheleg/telegram-dev)
 
 **Build Telegram bots, userbots and Mini Apps on the right API, with their delivery and authentication risks explicit.**
 
