@@ -1,3 +1,12 @@
+## v0.1.8 — the channel that sends the installs, on npm too
+
+- The `skills.sh` badge reached GitHub in the previous cycle and stopped
+  there: npm serves the README and the metadata from the last **publish**, so the package
+  page still showed no badge.
+  This release carries it across.
+- No behaviour changes. Cut because a change that lands on `main` and never publishes is a
+  change the package's own readers cannot see.
+
 ## v0.1.7 — the shared seam is explicit
 
 Both shared validators now state `diverges: none`, completing the umbrella
