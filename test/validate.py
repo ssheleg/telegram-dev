@@ -100,8 +100,14 @@ def check_three_skills_ship():
 
 
 @check
-def check_one_version_four_files():
-    """package.json, plugin.json, marketplace.json and the top CHANGELOG entry agree."""
+def check_one_version_five_files():
+    """package.json, plugin.json, marketplace.json, the top CHANGELOG entry and
+    SKILL-CARD.md agree.
+
+    The card was the fifth surface and the last one added: it said 0.1.7 while
+    everything else said 0.1.8, because nothing compared it — the exact drift
+    class this check exists for, found by reading rather than by a gate.
+    """
     if not version:
         fail("package.json: missing version")
         return
@@ -120,6 +126,15 @@ def check_one_version_four_files():
         fail(f"CHANGELOG.md: first line is not a `## vX.Y.Z` heading — {head!r}")
     elif m.group(1) != version:
         fail(f"CHANGELOG.md heads v{m.group(1)}, package.json says v{version}")
+    card = ROOT / "SKILL-CARD.md"
+    if not card.is_file():
+        fail("SKILL-CARD.md is missing")
+        return
+    m = re.search(r"\|\s*Version\s*\|\s*`([^`]+)`\s*\|", card.read_text(encoding="utf-8"))
+    if not m:
+        fail("SKILL-CARD.md: no `| Version | `X.Y.Z` |` row to compare")
+    elif m.group(1) != version:
+        fail(f"SKILL-CARD.md says v{m.group(1)}, package.json says v{version}")
 
 
 @check
@@ -350,6 +365,13 @@ PLANTS = (
      lambda t: re.sub(r'("version":\s*")(\d+)\.(\d+)\.(\d+)(")',
                       lambda m: f"{m.group(1)}{m.group(2)}.{int(m.group(3)) + 1}.0{m.group(5)}",
                       t, count=1), "version drift"),
+    # The skill card is the fifth version surface, added after it shipped a
+    # release behind everything else with nothing comparing it. Derived like
+    # the plant above: a literal version stops planting on the next release.
+    ("a skill card whose version stopped moving", "SKILL-CARD.md",
+     lambda t: re.sub(r"(\|\s*Version\s*\|\s*`)(\d+)\.(\d+)\.(\d+)(`)",
+                      lambda m: f"{m.group(1)}{m.group(2)}.{int(m.group(3)) + 1}.0{m.group(5)}",
+                      t, count=1), "SKILL-CARD.md says"),
     ("a fixture the skill stops naming",
      "plugins/telegram-dev/skills/telegram-miniapps/SKILL.md",
      lambda t: t.replace("fixtures/verify_initdata.py", "fixtures/gone.py"), "which is not there"),

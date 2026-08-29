@@ -63,6 +63,26 @@ jobs:
             || { echo "the rerun did not skip anything"; exit 1; }
           echo "OK: $(echo "$NAMES" | wc -w | tr -d ' ') skills installed, rerun skipped"
 
+      - name: install.sh syntax check
+        run: bash -n install.sh
+
+      - name: npm installer CLI check
+        run: |
+          set -eu
+          node --check bin/telegram-dev.js
+          node bin/telegram-dev.js --help | grep -q -- '--force'
+
+      - name: npm installer functional test (fresh / rerun-skip / --force / plugin-present refusal)
+        # The cases live in test/installer_test.js — one home for the logic, so
+        # `npm test` locally and this job exercise the same assertions. The one
+        # this step exists for is PLUGIN-PRESENT: a fake HOME whose
+        # installed_plugins.json declares telegram-dev, asserting the exit 3,
+        # the remedy in the output, and that nothing was written. This repo's
+        # CI tested only a fresh HOME until v0.1.9, which is how a bare
+        # `npx @ssheleg/telegram-dev` shipped three shadows onto the operator's
+        # machine on 2026-08-29 — the live incident the family's canon cites.
+        run: node test/installer_test.js
+
       - name: What npm would publish
         run: npm pack --dry-run
 

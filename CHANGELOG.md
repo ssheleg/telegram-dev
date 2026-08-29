@@ -1,3 +1,51 @@
+## v0.1.9 — the installer refuses the shadow it shipped
+
+This repository is the live incident site the whole family's fix is named
+after: **on 2026-08-29 a bare `npx @ssheleg/telegram-dev` created three plugin
+shadows on the operator's machine** — all three skills landed as plain copies
+in `~/.claude/skills/` while the `telegram-dev` plugin was enabled, and a plain
+copy outranks the plugin and serves the version it was copied from forever.
+Nothing here looked before writing, and CI tested a fresh `HOME` only, so the
+plugin-present case had never run anywhere.
+
+- **Both installers now refuse that write** (canon: `make-skill` v0.25.0,
+  `distribution.md` §3). Before touching `~/.claude/skills/`, the target home's
+  `~/.claude/plugins/installed_plugins.json` is read — plugin keys are
+  `<name>@<marketplace>` and the two names differ often — with the
+  `plugins/marketplaces/telegram-dev` directory kept only as the fallback
+  signal, because it under-reports: a directory-sourced marketplace has no dir
+  there at all. The refusal exits **3**, prints the remedy with the spec taken
+  from the JSON (`claude plugin marketplace update telegram-dev`, then
+  `claude plugin update <spec>`, or the family launcher
+  `npx --yes sshlg-skills@latest update`), and offers an explicit `--force`
+  override. A missing or corrupt JSON reads as "no plugin" — fail open, never
+  crash: the fresh HOME is the common case. Only the Claude Code channel is
+  gated; installs into other agents are untouched.
+- **`test/installer_test.js`** runs both installers as processes against
+  throwaway HOMEs: plugin-present refuses with the remedy and writes nothing
+  (all three asserted), a differently-named marketplace spec reaches the remedy
+  verbatim, `--force` installs, corrupt JSON installs, a prefix-collider
+  (`telegram-dev-extra@x`) does not false-refuse, the marketplaces-dir-only
+  signal still refuses, and a fresh HOME still installs — 11 cases, mirrored
+  for `install.sh`. Watched failing against the pre-fix installers before the
+  fix landed: 7 cases red, the plugin-present one reproducing the incident
+  exactly (exit 0, three shadows written). Wired into `npm test` and CI.
+- **Both success paths now end by saying how the next version arrives** —
+  "Installed" is not a complete sentence, and an install nobody knows how to
+  update is the frozen copy waiting to happen.
+- **The dead "manual gate" blocks are gone from both installers.** Each carried
+  an existence-guarded notice copied from `sheleg-dev` that pointed at
+  `plugins/telegram-dev/hooks/hooks.json` — a file this plugin has never
+  shipped — cited a README section ("The manual gate") that does not exist
+  here, and claimed "since v0.7.0" in a 0.1.x repository. The guard never
+  fired, so the lie was silent; the blocks and their comment paragraphs are
+  removed.
+- **`SKILL-CARD.md` is now the fifth surface the one-version check reads.** The
+  card said `0.1.7` while everything else said `0.1.8`, because nothing
+  compared it. `check_one_version_five_files()` refuses that drift now, and the
+  negative self-test plants it — derived, never typed, like the version plant
+  before it.
+
 ## v0.1.8 — the channel that sends the installs, on npm too
 
 - The `skills.sh` badge reached GitHub in the previous cycle and stopped

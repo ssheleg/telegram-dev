@@ -7,9 +7,53 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC="$ROOT/plugins/telegram-dev/skills"
 DEST_ROOT="${HOME}/.claude/skills"
 
+FORCE=0
+if [[ "${1:-}" == "--force" ]]; then
+  FORCE=1
+elif [[ -n "${1:-}" ]]; then
+  echo "usage: $0 [--force]" >&2
+  exit 2
+fi
+
 if [ ! -d "$SRC" ]; then
   echo "error: skill sources missing at $SRC" >&2
   exit 1
+fi
+
+# One channel per agent: plain copies beside an installed plugin are two
+# listings of every skill in this pack, and the stale copies win. Refuse rather
+# than create that, and refuse loudly — reproduced live 2026-08-29 on this very
+# pack: a bare `npx @ssheleg/telegram-dev` shipped all three skills as plain
+# copies into the operator's ~/.claude/skills/ while the telegram-dev plugin
+# was enabled, because nothing here looked. installed_plugins.json is the
+# record of what is installed and is read first; the marketplaces/ dir alone
+# under-reports (a directory-sourced marketplace has no dir there, and plugin
+# names differ from marketplace names), so it is kept only as the fallback
+# signal. A missing or unparsable JSON reads as "no plugin" — fail open.
+INSTALLED_JSON="${HOME}/.claude/plugins/installed_plugins.json"
+MARKETPLACE="${HOME}/.claude/plugins/marketplaces/telegram-dev"
+SPEC=""
+if [[ -f "$INSTALLED_JSON" ]]; then
+  SPEC="$(sed -n 's/.*"\(telegram-dev@[^"]*\)".*/\1/p' "$INSTALLED_JSON" 2>/dev/null | head -n 1)" || true
+fi
+if [[ ( -n "$SPEC" || -e "$MARKETPLACE" ) && "$FORCE" -eq 0 ]]; then
+  {
+    if [[ -n "$SPEC" ]]; then
+      echo "refused: telegram-dev is already installed as the Claude Code plugin $SPEC"
+      echo "         (declared in ~/.claude/plugins/installed_plugins.json)."
+    else
+      echo "refused: telegram-dev is already registered as a Claude Code marketplace"
+      echo "         ($MARKETPLACE)."
+    fi
+    echo "         Plain copies in ~/.claude/skills/ would shadow the plugin's skills"
+    echo "         and serve this frozen version forever. Update the plugin channel"
+    echo "         instead:"
+    echo "           claude plugin marketplace update telegram-dev"
+    echo "           claude plugin update ${SPEC:-telegram-dev@telegram-dev}"
+    echo "         Family launcher: npx --yes sshlg-skills@latest update"
+    echo "         Pass --force to write the plain copies anyway."
+  } >&2
+  exit 3
 fi
 
 count=0
@@ -30,21 +74,5 @@ if [ "$count" -eq 0 ]; then
 fi
 
 echo "Installed $count skill(s). Restart your agent — skills load at session start."
-
-# The manual gate does not travel this way, and saying so is the whole of what this
-# script can honestly do about it. `plugins/telegram-dev/hooks/` is a PreToolUse hook that
-# refuses a refund, a payout, a live key and the free-money path; the plugin channel loads
-# it from the plugin manifest, and this channel copies skill directories only.
-#
-# `bin/telegram-dev.js` has printed this since v0.7.0 and this script printed nothing — the
-# more dangerous of the two channels, since it `rm -rf`s each destination first. Writing to
-# the operator's `~/.claude/settings.json` is deliberately NOT done: it is a file they own
-# and did not write, with no version control behind it, and the family umbrella carries two
-# defects in its own history from doing exactly that. So the step is printed and left.
-if [ -f "$ROOT/plugins/telegram-dev/hooks/hooks.json" ]; then
-  echo
-  echo "Note: the manual gate (a PreToolUse hook refusing refunds, payouts, live keys"
-  echo "and SKIP_BILLING in production) ships with the PLUGIN, not with this skills copy."
-  echo "To get it here, register it yourself — README.md, section \"The manual gate\","
-  echo "has the settings snippet, both matchers. Nothing enforces this step."
-fi
+# The last line says how the next version arrives.
+echo "Updates: git pull && ./install.sh --force, or npx --yes sshlg-skills@latest update"
