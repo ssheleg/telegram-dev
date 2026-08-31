@@ -120,6 +120,18 @@ npm test              # the validator, then both fixtures including the mutant m
 npm run test:negatives # plant each defect and require the validator to refuse it
 ```
 
+Both are offline and stdlib-only, which is why the `$schema` guard inside them can
+only pin the two addresses rather than resolve them. The half that fetches is kept
+separate, because `npm test` has to keep working with no network:
+
+```bash
+pip install jsonschema && python3 test/check_schemas.py
+```
+
+It resolves every `$schema` the manifests declare and validates each document
+against what that address actually serves. It exits 2, not 0, when SchemaStore is
+unreachable — a check that could not look must not read as one that looked.
+
 Contributions welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). To report a
 vulnerability, see [SECURITY.md](SECURITY.md).
 

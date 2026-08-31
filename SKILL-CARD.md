@@ -5,7 +5,7 @@
 | Field | Value |
 |---|---|
 | Pack | `telegram-dev` |
-| Version | `0.1.10` |
+| Version | `0.1.11` |
 | Skills | `telegram-bots`, `telegram-userbots`, `telegram-miniapps` |
 | License | MIT |
 | Source | https://github.com/ssheleg/telegram-dev |
@@ -40,8 +40,10 @@ Install from npm/GitHub, through the Agent Skills CLI, or as the
 - Repository validator and tests: `npm test`
 - Protocol mutant fixtures: repository test suite
 - House audit: pinned `make-skill` auditor in `validate.yml`
+- Declared `$schema` addresses resolved and validated: `python3 test/check_schemas.py`
 - Behavioral data: `test/evals/`
-- Evaluation status: authored and schema-validated; no model run claimed
+- Evaluation status: executed 2026-08-31 against claude-haiku and claude-sonnet;
+  two dated rows with their method in `test/evals/RESULTS.md`
 
 ## Known limits
 

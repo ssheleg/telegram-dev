@@ -36,6 +36,23 @@ NUMBER_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
                 "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
                 "eleven": 11, "twelve": 12}
 
+# The live Claude Code schemas on SchemaStore, one per document type. Pinned as an
+# allowlist rather than matched by pattern, because the address that was wrong here
+# looked exactly right. Measured 2026-08-31 with `curl -sSL -o /dev/null -w '%{http_code}'`,
+# following redirects to www.schemastore.org:
+#     claude-code-plugin.json           404   <- what BOTH manifests declared until v0.1.11
+#     claude-code-plugin-manifest.json  200   "Claude Code Plugin Manifest"
+#     claude-code-marketplace.json      200   "Claude Code Plugin Marketplace"
+# That those two still resolve, and that these documents still validate against what
+# they serve, is `test/check_schemas.py` — deliberately outside `npm test`, which must
+# stay offline. This check is the offline half: it cannot fetch, so it pins.
+SCHEMA_HOST = "https://json.schemastore.org/"
+SCHEMA_FOR = {
+    ".claude-plugin/marketplace.json": SCHEMA_HOST + "claude-code-marketplace.json",
+    f"plugins/{PLUGIN}/.claude-plugin/plugin.json": SCHEMA_HOST + "claude-code-plugin-manifest.json",
+}
+DEAD_SCHEMAS = {SCHEMA_HOST + "claude-code-plugin.json": "404"}
+
 _problems: list[str] = []
 _notes: list[str] = []
 
@@ -138,6 +155,51 @@ def check_one_version_five_files():
         fail("SKILL-CARD.md: no `| Version | `X.Y.Z` |` row to compare")
     elif m.group(1) != version:
         fail(f"SKILL-CARD.md says v{m.group(1)}, package.json says v{version}")
+
+
+@check
+def check_schema_addresses_are_live_and_match_the_document():
+    """A `$schema` that resolves to nothing is worse than no `$schema` at all.
+
+    Both of this repository's manifests declared `claude-code-plugin.json`, which
+    SchemaStore 404s. Nothing failed: an editor or a validator following it gets an
+    error rather than a schema, so the tree reads as conformant while nothing is
+    actually checking it — the manifests were unchecked for eleven releases.
+
+    The marketplace was wrong three ways at once, which is why this check has three
+    branches rather than one. Its declaration named a dead address; it named the
+    PLUGIN document type for a MARKETPLACE document; and it sat inside the plugin
+    entry, where `$schema` is inert — only the root declaration is ever read. Fixing
+    the address alone would have left two of the three standing.
+
+    An allowlist, not a blocklist of the one dead name: the next wrong address will
+    not be this one, and exactly two addresses are right here.
+    """
+    docs = {".claude-plugin/marketplace.json": market,
+            f"plugins/{PLUGIN}/.claude-plugin/plugin.json": plugin}
+    for rel, want in SCHEMA_FOR.items():
+        doc = docs[rel]
+        if doc is None:                      # already reported by load_json
+            continue
+        got = doc.get("$schema")
+        if got is None:
+            fail(f"{rel}: declares no $schema — every editor and validator that would "
+                 f"check this document has nothing to fetch; declare {want}")
+        elif got in DEAD_SCHEMAS:
+            fail(f"{rel}: $schema is {got!r}, which SchemaStore answers with "
+                 f"{DEAD_SCHEMAS[got]} — a dead address reads as conformance while "
+                 f"nothing checks the document; use {want}")
+        elif got != want:
+            fail(f"{rel}: $schema is {got!r}, not the schema for this document type — "
+                 f"a marketplace is not a plugin manifest and the two shapes differ "
+                 f"(a marketplace entry requires `source`, a manifest has no such key); "
+                 f"use {want}")
+    for entry in (market or {}).get("plugins", []):
+        if "$schema" in entry:
+            fail(f".claude-plugin/marketplace.json: plugin entry {entry.get('name')!r} "
+                 "carries its own $schema, which is inert — below the document root "
+                 "nothing reads it, so a declaration there is decoration that hides the "
+                 "absence of the root one")
 
 
 @check
@@ -427,6 +489,26 @@ PLANTS = (
      lambda t: t.replace("compatibility: Fixtures run with python3 "
                          "(standard library only)\n", "", 1),
      "declares no python3"),
+    # Four plants for one check, because the defect it was written for was four
+    # failures wearing one line. Restoring any single one of them puts the tree
+    # back in a state that shipped for eleven releases looking correct.
+    ("the dead $schema address restored", ".claude-plugin/marketplace.json",
+     lambda t: t.replace("claude-code-marketplace.json",
+                         "claude-code-plugin.json", 1), "which SchemaStore answers with 404"),
+    ("a $schema naming the wrong document type",
+     "plugins/telegram-dev/.claude-plugin/plugin.json",
+     lambda t: t.replace("claude-code-plugin-manifest.json",
+                         "claude-code-marketplace.json", 1),
+     "not the schema for this document type"),
+    ("a $schema in the inert nested position", ".claude-plugin/marketplace.json",
+     lambda t: t.replace('      "name": "telegram-dev",\n',
+                         '      "$schema": "https://json.schemastore.org/'
+                         'claude-code-plugin-manifest.json",\n'
+                         '      "name": "telegram-dev",\n', 1), "which is inert"),
+    ("a manifest that declares no $schema at all",
+     "plugins/telegram-dev/.claude-plugin/plugin.json",
+     lambda t: re.sub(r'^\s*"\$schema":.*\n', "", t, count=1, flags=re.M),
+     "declares no $schema"),
 )
 
 
