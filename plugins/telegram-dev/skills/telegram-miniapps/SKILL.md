@@ -14,6 +14,7 @@ description: >-
   Not for the bot behind it (telegram-bots) or user accounts
   (telegram-userbots).
 license: MIT
+compatibility: Fixtures run with python3 (standard library only)
 ---
 
 # Telegram Mini Apps — one signed blob is the whole model

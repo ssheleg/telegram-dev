@@ -32,6 +32,9 @@ DESC_MAX, DESC_HOUSE = 1024, 970
 BODY_MAX_TOKENS, BODY_HOUSE_TOKENS, BODY_MAX_LINES = 5000, 4750, 500
 CHARS_PER_TOKEN = 3.9
 RESERVED = ("anthropic", "claude")      # rejected by the Skills API on upload
+NUMBER_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
+                "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
+                "eleven": 11, "twelve": 12}
 
 _problems: list[str] = []
 _notes: list[str] = []
@@ -233,6 +236,12 @@ def check_fixtures_are_reachable_and_run():
                 fail(f"{name}/SKILL.md never names fixtures/{f} — the reader cannot find it")
             if f.endswith(".py") and f"skills/{name}/fixtures/{f}" not in test_cmd:
                 fail(f"package.json: `npm test` does not run {name}/fixtures/{f}")
+        if any(f.endswith(".py") for f in files):
+            block, _body = front_matter(SKILL_ROOT / name / "SKILL.md")
+            compat = scalar(block or "", "compatibility")
+            if not compat or "python3" not in compat:
+                fail(f"{name}/SKILL.md: ships python3 fixtures and declares no python3 "
+                     "`compatibility` — the host cannot know the requirement")
 
 
 @check
@@ -288,10 +297,38 @@ def check_the_readme_counts_what_ships():
     if not m:
         fail("README.md: no '**N skills' sentence to check against the tree")
         return
-    words = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7}
-    stated = words.get(m.group(1).lower()) or (int(m.group(1)) if m.group(1).isdigit() else None)
+    stated = NUMBER_WORDS.get(m.group(1).lower()) or (int(m.group(1)) if m.group(1).isdigit() else None)
     if stated != len(skill_dirs):
         fail(f"README.md says {m.group(1)!r} skills; the tree ships {len(skill_dirs)}")
+
+
+@check
+def check_the_readme_names_every_reference():
+    """The per-skill reference table is compared to the tree, both ways.
+
+    A reference the table misses is a file no reader knows ships; a row pointing
+    at nothing is a dead promise. The stated count is derived the same way the
+    skill count is — a number typed by hand is an assertion.
+    """
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    on_disk: dict[str, str] = {}
+    for name in skill_dirs:
+        rdir = SKILL_ROOT / name / "references"
+        for p in (rdir.glob("*.md") if rdir.is_dir() else []):
+            on_disk[p.name] = name
+    named = set(re.findall(r"references/([A-Za-z0-9._-]+\.md)", readme))
+    for ghost in sorted(named - set(on_disk)):
+        fail(f"README.md names references/{ghost}, which no skill ships")
+    for unnamed in sorted(set(on_disk) - named):
+        fail(f"{on_disk[unnamed]}/references/{unnamed} ships and README.md never "
+             "names it — the table exists so a reader sees what arrives")
+    m = re.search(r"\*\*(\w+) reference files\b", readme)
+    if not m:
+        fail("README.md: no '**N reference files' sentence to check against the tree")
+        return
+    stated = NUMBER_WORDS.get(m.group(1).lower()) or (int(m.group(1)) if m.group(1).isdigit() else None)
+    if stated != len(on_disk):
+        fail(f"README.md says {m.group(1)!r} reference files; the tree ships {len(on_disk)}")
 
 
 @check
@@ -382,6 +419,14 @@ PLANTS = (
      "secret-shaped"),
     ("a README count that stops matching the tree", "README.md",
      lambda t: t.replace("**Three skills", "**Four skills", 1), "the tree ships"),
+    ("a reference the README table stops naming", "README.md",
+     lambda t: t.replace("references/rate-and-flood.md",
+                         "references/rate-and-floodX.md", 1), "no skill ships"),
+    ("a python3 fixture with no compatibility declaration",
+     "plugins/telegram-dev/skills/telegram-bots/SKILL.md",
+     lambda t: t.replace("compatibility: Fixtures run with python3 "
+                         "(standard library only)\n", "", 1),
+     "declares no python3"),
 )
 
 
