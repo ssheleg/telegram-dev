@@ -1,3 +1,79 @@
+## v0.1.11 — a $schema that resolved to nothing, in both manifests
+
+Both manifests declared `https://json.schemastore.org/claude-code-plugin.json`.
+SchemaStore **404s** that address, and has for every one of this repository's
+eleven releases. Nothing failed, which is the whole problem: a `$schema` naming a
+dead address is worse than no `$schema` at all, because an editor or a validator
+that follows it gets an error instead of a schema, and the tree reads as
+conformant while nothing is checking it. `claude plugin validate --strict` was
+green throughout — it does not follow `$schema`.
+
+Measured 2026-08-31, `curl -sSL -o /dev/null -w '%{http_code}'`, following
+redirects to `www.schemastore.org`:
+
+| address | code |
+|---|---|
+| `claude-code-plugin.json` | **404** |
+| `claude-code-plugin-manifest.json` | 200 — "Claude Code Plugin Manifest" |
+| `claude-code-marketplace.json` | 200 — "Claude Code Plugin Marketplace" |
+
+- **`plugins/telegram-dev/.claude-plugin/plugin.json` now declares
+  `claude-code-plugin-manifest.json`** — the live name for what it is.
+- **`.claude-plugin/marketplace.json` was wrong three ways at once**, and only
+  one of them was the address. Its declaration named the dead schema; it named
+  the **plugin** document type for a **marketplace** document, which are
+  genuinely different shapes (a marketplace entry requires `source`, a plugin
+  manifest has no such key); and it sat **inside the plugin entry**, where
+  `$schema` is inert — only the root declaration is ever read. So the document
+  had no effective `$schema` at all. It now carries the marketplace schema at
+  the root and nothing nested, matching the shape five other family members
+  already ship.
+- **The swap is not the receipt.** Both documents were validated with
+  `jsonschema` against the schemas fetched from their declared addresses, and
+  both pass: titles "Claude Code Plugin Marketplace" and "Claude Code Plugin
+  Manifest". `claude plugin validate . --strict` and
+  `claude plugin validate plugins/telegram-dev --strict` both green.
+
+### The guard, in two halves that do different jobs
+
+`npm test` is stdlib-only and offline **by design** — a validator that needs the
+network is one that stops running on a train. So it cannot resolve an address,
+and a guard that pretends otherwise would be the same class of lie as the dead
+`$schema`. The two halves are split accordingly, and they share one address map
+so there is no copy to drift:
+
+- **Offline, in `test/validate.py` (check 14).** An allowlist, not a blocklist of
+  the one dead name — the next wrong address will not be this one, and exactly
+  two are right here. It refuses a dead address by name, a schema naming the
+  wrong document type, a `$schema` in the inert nested position, and a manifest
+  declaring none at all.
+- **Networked, in `test/check_schemas.py`.** Resolves every declared `$schema`
+  and validates each document against what that address actually serves. Kept
+  out of `npm test`, wired into `validate.yml` as its own step. It exits **2**,
+  not 0, when SchemaStore is unreachable, and that step warns rather than failing
+  — a gate that goes red on somebody else's outage is one people learn to re-run
+  past, and the offline half still holds underneath.
+
+Both halves were watched refusing. The offline one was run against the **released
+v0.1.10 tree** with only the new validator dropped on top, and it named all three
+defects separately (`rc=1`); the networked one was run against a planted dead
+address and reported `HTTP 404 (final https://www.schemastore.org/claude-code-plugin.json)`.
+Self-test 11 → 15 plants, one per branch of the new check; validator 13 → 14
+checks.
+
+**The third member of the family to carry this exact dead address**, and the
+reason it is written down here rather than just fixed: `super-ux` and
+`agent-stack` chose the resolving names from the start, `sheleg-dev` found and
+fixed its own pair in v0.11.2, and this repository was carrying it at the same
+time. It is a copy-paste lineage, not three coincidences, so the pattern belongs
+in a changelog where the fourth repository's author can find it.
+
+- Also corrected: `SKILL-CARD.md` claimed "Evaluation status: authored and
+  schema-validated; no model run claimed", which v0.1.10 made false — the evals
+  were executed on 2026-08-31 and `test/evals/RESULTS.md` carries two dated rows
+  (claude-haiku, claude-sonnet) with their method. The card now says what the
+  file says.
+
 ## v0.1.10 — the references named, the runtime declared, the evals finally run
 
 Three audit tails (TG-04, TG-05, TG-06), each with the check that keeps it true.

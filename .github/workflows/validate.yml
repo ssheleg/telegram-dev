@@ -43,6 +43,31 @@ jobs:
           claude plugin validate . --strict
           claude plugin validate plugins/telegram-dev --strict
 
+      - name: The declared $schema addresses resolve, and the manifests validate against them
+        # Outside `npm test` on purpose: that suite is stdlib-only and offline, so its
+        # guard can only PIN the two addresses. This is the half that fetches them.
+        # Both manifests declared `claude-code-plugin.json` until v0.1.11 — a 404 — so
+        # for eleven releases they carried a schema reference that checked nothing, and
+        # `claude plugin validate --strict` above was green throughout: it does not
+        # follow `$schema`.
+        #
+        # rc 1 is a proven wrong address and fails the job. rc 2 is "could not look"
+        # (SchemaStore unreachable), which warns instead: a gate that goes red on
+        # somebody else's outage is one people learn to re-run past, and the offline
+        # half is still holding the line underneath it.
+        run: |
+          set -eu
+          pip install jsonschema
+          set +e
+          python3 test/check_schemas.py
+          rc=$?
+          set -e
+          if [ "$rc" = "2" ]; then
+            echo "::warning::could not reach SchemaStore — the addresses were not resolved this run"
+            exit 0
+          fi
+          exit "$rc"
+
       - name: The installer runs against a fresh HOME, and the rerun skips
         run: |
           set -eu
