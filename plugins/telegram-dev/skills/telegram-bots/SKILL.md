@@ -15,6 +15,7 @@ description: >-
   cannot see (telegram-userbots), and not for the web layer
   (telegram-miniapps).
 license: MIT
+compatibility: Fixtures run with python3 (standard library only)
 ---
 
 # Telegram bots — the official Bot API

@@ -60,6 +60,26 @@ local Bot API server.
   party, exchanging the blob for your own session, and the SDK package whose name
   moved.
 
+## What loads on demand
+
+**Ten reference files** ship beside the three skills. Each `SKILL.md` stays
+inside its token budget and pulls these in only when the work reaches them —
+this table is what actually arrives in your repository, and the validator
+compares it to the tree both ways:
+
+| Skill | Reference | Load it when |
+|---|---|---|
+| `telegram-bots` | `references/updates-and-delivery.md` | wiring `getUpdates` or `setWebhook`, or explaining why an update arrived twice or not at all |
+| `telegram-bots` | `references/payments-stars.md` | the bot sells anything — Stars, the ten-second pre-checkout window, refunds |
+| `telegram-bots` | `references/limits-and-files.md` | sending at volume, broadcasting, or moving anything larger than a photo |
+| `telegram-bots` | `references/frameworks.md` | choosing a library, or auditing one somebody else chose |
+| `telegram-miniapps` | `references/initdata-verification.md` | implementing or reviewing `initData` verification — both algorithms, every known wrong turn |
+| `telegram-miniapps` | `references/app-to-bot.md` | the app has to return a result, open an inline result, or take money |
+| `telegram-miniapps` | `references/viewport-and-platform.md` | the app looks wrong on a real device — safe areas, the jumping viewport |
+| `telegram-userbots` | `references/sessions-and-auth.md` | creating, storing or moving a session, or a process that ran yesterday asks for a code |
+| `telegram-userbots` | `references/rate-and-flood.md` | anything iterates over chats, users, messages or media — FloodWait, pacing, takeout |
+| `telegram-userbots` | `references/entities-and-history.md` | resolving users or chats, iterating messages, downloading at scale |
+
 ## Runnable, not described
 
 ```bash

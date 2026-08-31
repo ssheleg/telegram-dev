@@ -1,3 +1,38 @@
+## v0.1.10 — the references named, the runtime declared, the evals finally run
+
+Three audit tails (TG-04, TG-05, TG-06), each with the check that keeps it true.
+
+- **The README now names all ten bundled reference files** in a per-skill
+  table — what actually arrives in a repository was previously visible only by
+  reading three `SKILL.md` files. The table is not trusted: a new validator
+  check compares it to the tree **both ways** (a row pointing at nothing and a
+  file the table misses both refuse), and the stated count is derived like the
+  skill count, never typed. Watched failing against the v0.1.9 tree before the
+  table existed: 13 failures — 10 unnamed references, 1 missing count sentence,
+  plus the two below.
+- **`telegram-bots` and `telegram-miniapps` declare
+  `compatibility: Fixtures run with python3 (standard library only)`** — both
+  ship runnable python3 fixtures and said so nowhere a host could read it.
+  Plain YAML scalar, no colon-space (the defect class the family shipped twice
+  this week); all three front matters re-parsed with `yaml.safe_load` as the
+  receipt. The validator now refuses a skill that ships `.py` fixtures without
+  a python3 `compatibility` line, so the next fixture-carrying skill cannot
+  skip it. `telegram-userbots` ships no fixtures and correctly declares
+  nothing.
+- **The evals were executed for the first time** — `RESULTS.md` had said
+  "authored, never executed" since the suite landed. Two dated rows now exist
+  (claude-haiku, claude-sonnet): all 12 trigger queries asked 3× each per model
+  in fresh sub-agent sessions per the eval protocol, all 3 scenarios run per
+  model and scored line by line, with the method and its limits stated in the
+  file. Headline: positives 36/36 per model, always on the intended surface;
+  the near-miss negatives are where the models differ (haiku 17/18, sonnet
+  12/18 — q07/q08/q10/q12 pulled toward the pack under sonnet). Scenario
+  lines: sonnet 12/12 with the skills loaded, haiku 6/12 answering from
+  memory — reproducing the exact defects the fixtures plant. Recorded
+  instead of guessed.
+- Self-test grew 9 → 11 plants (the README reference table and the missing
+  compatibility declaration), validator 12 → 13 checks.
+
 ## v0.1.9 — the installer refuses the shadow it shipped
 
 This repository is the live incident site the whole family's fix is named
