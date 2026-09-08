@@ -43,12 +43,14 @@ Deep material, loaded on demand:
 | [`references/frameworks.md`](references/frameworks.md) | choosing or auditing a library — aiogram, grammY, Telegraf, python-telegram-bot, and what each hides |
 
 **Runnable, and shipped beside this file:**
-[`fixtures/update_delivery.py`](fixtures/update_delivery.py) — six invariants a
+[`fixtures/update_delivery.py`](fixtures/update_delivery.py) — nine invariants a
 correct handler holds, each with the mutant that makes it fail. `python3
 fixtures/update_delivery.py --self-test` watches a redelivered update processed
 twice, an update lost to a crash at the offset seam, an acked update lost to a
 dead worker, a redelivery answered "duplicate" about work that never happened, a
-reply dropped on 429, and one payment granted twice. Standard library only.
+reply doubled by a crash before the done mark, a redelivered outbox row sent
+twice, one charge granted twice across two updates, a reply dropped on 429, and
+one payment granted twice. Standard library only.
 
 ---
 

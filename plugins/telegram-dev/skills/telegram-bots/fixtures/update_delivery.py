@@ -32,6 +32,13 @@ RULES = (
     # it. Without it the row is marked done at take-time, so receipt quietly
     # becomes completion and a crash after the ack loses the update.
     "worker-retry",
+    # Replies leave through an OUTBOX row enqueued by the work, not a direct call
+    # inside it. Without this rule a crash between the send and the row's done
+    # mark makes the retry send again — the reply arrives twice.
+    "send-outbox",
+    # The outbox delivers at least once, so the send consumer dedups on its own
+    # key (update id + effect kind). Without it a redelivered row sends again.
+    "send-consumer-key",
     # The ack is sent only after the durable write. Without it a crash between
     # the two loses the update for good — the API keeps it 24 hours and the bot
     # has already said it was taken.
@@ -50,6 +57,8 @@ class Store:
     def __init__(self) -> None:
         self.processed: set[int] = set()
         self.inbox: dict[int, dict] = {}   # update_id -> {"state": 'pending'|'done', "update": …}
+        self.outbox: list[dict] = []       # send rows: {"key", "text", "state"}
+        self.sent_keys: set[str] = set()   # the consumer's own dedup, across redelivered rows
         self.acked: list[int] = []         # every 200 the transport saw (or offset advance)
         self.work: list[int] = []          # one entry per unit of work actually done
         self.offset: int | None = None
@@ -104,6 +113,7 @@ class Handler:
         self.store = store
         self.transport = transport
         self.without = set(without)
+        self._crash_after_send = False
 
     def has(self, rule: str) -> bool:
         return rule not in self.without
@@ -146,7 +156,8 @@ class Handler:
             return
         self.run_worker(uid, crash=(crash == "in-worker"))
 
-    def run_worker(self, uid: int, crash: bool = False) -> None:
+    def run_worker(self, uid: int, crash: bool = False,
+                   crash_after_send: bool = False) -> None:
         """One work attempt against a pending inbox row. Off the request path in
         production; inline here so every invariant stays deterministic."""
         row = self.store.inbox.get(uid)
@@ -156,14 +167,35 @@ class Handler:
             row["state"] = "done"        # done at take-time: a crash now loses the row
         if crash:
             raise SystemError("worker killed mid-work")
-        self._work(row["update"])
+        self._crash_after_send = crash_after_send
+        try:
+            self._work(row["update"])
+        finally:
+            self._crash_after_send = False
         row["state"] = "done"
+        self.drain_outbox()
+
+    def drain_outbox(self) -> None:
+        """The send consumer. Rows arrive at least once, so the consumer holds its
+        OWN key — a redelivered row must not reach the user twice."""
+        for row in self.store.outbox:
+            if row["state"] == "sent":
+                continue
+            if self.has("send-consumer-key") and row["key"] in self.store.sent_keys:
+                row["state"] = "sent"
+                continue
+            self._send(row["text"])
+            if self.has("send-consumer-key"):
+                self.store.sent_keys.add(row["key"])
+            row["state"] = "sent"
 
     def run_workers(self) -> None:
-        """The sweep: every pending row gets another attempt. In production this is
-        the worker loop under a lease; a row a crashed worker held comes back here."""
+        """The sweep: every pending row gets another attempt, and the outbox is
+        drained. In production this is the worker loop under a lease; a row a
+        crashed worker held comes back here."""
         for uid in sorted(self.store.inbox):
             self.run_worker(uid)
+        self.drain_outbox()
 
     def poll_batch(self, updates: list[dict], crash_on: int | None = None) -> None:
         """A getUpdates batch.
@@ -208,7 +240,18 @@ class Handler:
             self.store.work.append(update["update_id"])
             return
         self.store.work.append(update["update_id"])
-        self._send(f"reply to {update['update_id']}")
+        if self.has("send-outbox"):
+            # Enqueued by the work, sent by the drain. The row's key is the
+            # BUSINESS identity of the send, and it survives a re-run of the work.
+            self.store.outbox.append({
+                "key": f"{update['update_id']}:reply",
+                "text": f"reply to {update['update_id']}",
+                "state": "pending",
+            })
+        else:
+            self._send(f"reply to {update['update_id']}")   # the pre-outbox shape
+        if self._crash_after_send:
+            raise SystemError("killed between the work and its done mark")
 
     def _send(self, text: str) -> None:
         while True:
@@ -313,6 +356,47 @@ def _(store, handler):
     assert store.work == [UPDATE_A["update_id"]], (
         "the redelivery was answered 'duplicate' and nothing ever did the work — "
         "a duplicate is an answer about a done row, not about a receipt"
+    )
+
+
+@invariant("a crash between send and done mark does not double the reply",
+           breaks=("send-outbox", "send-consumer-key"))
+def _(store, handler):
+    # The worker does the work (which enqueues the reply) and dies before marking
+    # the row done. The retry re-runs the work; the outbox key is the send's
+    # business identity, so the reply still reaches the user exactly once.
+    store.inbox[UPDATE_A["update_id"]] = {"state": "pending", "update": dict(UPDATE_A)}
+    try:
+        handler.run_worker(UPDATE_A["update_id"], crash_after_send=True)
+    except SystemError:
+        pass
+    assert store.inbox[UPDATE_A["update_id"]]["state"] == "pending", \
+        "the crash did not interrupt before the done mark"
+    handler.run_workers()                        # the retry
+    assert len(store.sent) == 1, (
+        f"the reply reached the user {len(store.sent)} times — a crash between the send "
+        "and the done mark doubled it on retry"
+    )
+
+
+@invariant("a redelivered outbox row sends nothing twice", breaks=("send-consumer-key",))
+def _(store, handler):
+    handler.deliver(dict(UPDATE_A))
+    assert len(store.sent) == 1, "the first drain did not send"
+    for row in store.outbox:
+        row["state"] = "pending"                 # the queue redelivers every row
+    handler.drain_outbox()
+    assert len(store.sent) == 1, "a redelivered outbox row reached the user again"
+
+
+@invariant("one charge across two updates grants once", breaks=("charge-id-guard",))
+def _(store, handler):
+    handler.deliver(dict(PAYMENT))
+    redelivered = dict(PAYMENT, update_id=PAYMENT["update_id"] + 1)   # new update, same charge
+    handler.deliver(redelivered)
+    assert store.granted == ["chg_PLACEHOLDER_1"], (
+        "one payment granted twice — the transport claim keys on update_id and only "
+        "the charge id is the grant's business identity"
     )
 
 

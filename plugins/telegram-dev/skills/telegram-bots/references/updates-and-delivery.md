@@ -45,6 +45,13 @@ while True:
 - **Confirm after the durable write, not before.** Advancing `offset` first turns
   a crash into silent data loss — Telegram keeps the update 24 hours and you have
   already said it was taken.
+- **Replies leave through an outbox, and the consumer holds its own key.** The
+  work enqueues the send (key: update id + effect kind); the drain delivers it.
+  A crash between the send and the row's done mark makes the retry re-run the
+  work, and only the outbox key keeps the user from getting the reply twice —
+  the same at-least-once arithmetic as the inbox, pointed outward. The GRANT'S
+  key is the business identity (`telegram_payment_charge_id`), never the
+  `update_id`: one charge arriving in two updates is one payment.
 - **The inbox row is the claim, and it has states.** A redelivery is absorbed by
   the `INSERT` refusing a duplicate — which is safe *only because* the first
   insert was durable and a worker owns finishing it. Claim-then-work with a
