@@ -24,6 +24,9 @@ jobs:
       - name: Tests — the same entry point a human uses
         run: npm test
 
+      - name: Audit regressions (sherlock plan, one file per closed finding)
+        run: npm run test:audit
+
       - name: Negative self-test — every guard watched refusing its own defect
         # The half that makes the validator a gate. It plants each defect in a
         # copy of the tree and fails if the validator still passes.

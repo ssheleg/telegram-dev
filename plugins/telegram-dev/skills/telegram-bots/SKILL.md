@@ -43,11 +43,12 @@ Deep material, loaded on demand:
 | [`references/frameworks.md`](references/frameworks.md) | choosing or auditing a library — aiogram, grammY, Telegraf, python-telegram-bot, and what each hides |
 
 **Runnable, and shipped beside this file:**
-[`fixtures/update_delivery.py`](fixtures/update_delivery.py) — four invariants a
+[`fixtures/update_delivery.py`](fixtures/update_delivery.py) — six invariants a
 correct handler holds, each with the mutant that makes it fail. `python3
 fixtures/update_delivery.py --self-test` watches a redelivered update processed
-twice, an update lost to a crash, a reply dropped on 429, and one payment granted
-twice. Standard library only.
+twice, an update lost to a crash at the offset seam, an acked update lost to a
+dead worker, a redelivery answered "duplicate" about work that never happened, a
+reply dropped on 429, and one payment granted twice. Standard library only.
 
 ---
 
@@ -69,20 +70,27 @@ user account is a liability a bot token is not.
 
 ```python
 # aiogram 3.x — the shape, not the framework
-async def handle(update: Update, db) -> None:
-    if not await db.claim_update(update.update_id):   # INSERT on a primary key
-        return                                        # already processed
-    await do_the_work(update)
+async def webhook(update: Update, db) -> web.Response:
+    await db.inbox_put(update.update_id, raw_body)    # INSERT on a primary key,
+    return web.Response(status=200)                   # durable BEFORE the ack
+
+# off the request path: a worker takes a pending row, does the work, marks it
+# done — and a crashed attempt leaves the row pending for the next sweep
 ```
 
 - **`update_id` is the only idempotency key you get.** It is sequential and it is
   stable across redeliveries. Nothing else in an update identifies it: two
   identical messages a second apart are two events, and the same event delivered
   twice is one.
-- **Claim before working**, with an `INSERT` on a primary key, not a `SELECT`
-  then an `INSERT`. Under a webhook Telegram may open up to `max_connections`
-  (default 40) simultaneous connections, so two deliveries of one update can be
-  in flight at once.
+- **Inbox before ack — a claim is a receipt, not completion.** The `INSERT` on a
+  primary key (never a `SELECT` then an `INSERT`: under a webhook up to
+  `max_connections`, default 40, deliveries of one update can be in flight at
+  once) writes a durable row the 200 is only then allowed to answer for. Work
+  runs off the request under a worker lease: a worker that dies leaves the row
+  pending and the sweep retries it. Claim-then-work inside the request is the
+  quiet data-loss shape — the crash leaves the claim standing, Telegram's
+  redelivery reads "duplicate", and the update is gone while every fixture
+  stays green.
 - **Updates are kept for 24 hours** and no longer. A bot that is down for a day
   has lost them, and nothing will say so — reconcile from your own state, never
   from the assumption that the queue drained.
