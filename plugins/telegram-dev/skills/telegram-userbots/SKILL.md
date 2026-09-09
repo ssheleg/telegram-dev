@@ -155,7 +155,11 @@ as an alert with the account named, stop work until FRESH auth (a re-login that
 needs the phone), and never a crash loop — the same three-state contract
 `sheleg-dev`'s error-tracking states for any long-lived authenticated
 connection: liveness, readiness, degraded_auth (transient retries, terminal
-stops). Never put a userbot on the critical path of something a bot could
+stops). **A supervisor restart is for the `recoverable` policy only**; a
+revoked session is `terminal` and lands on the STOP-and-alert row of that
+skill's recovery-contract table, so the identical event cannot draw opposite
+actions in the two packs. Never put a userbot on the critical path of
+something a bot could
 serve.
 
 ## Before you ship

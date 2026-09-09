@@ -72,8 +72,10 @@ code: an `AuthKeyUnregisteredError` or an unauthorised state on the next call.
 
 - **Detect and alert, naming the account.** This is the TERMINAL auth state:
   the process may be live, but readiness is false and it stays false until a
-  fresh login. Do not retry: reconnecting with a dead session in a loop is a
-  good way to draw attention to the account, and a bounded retry that keeps
+  fresh login. Do not retry, and **do not let a supervisor restart it** — a
+  supervisor restart is for the `recoverable` policy only; a revoked session is
+  `terminal` and lands on the STOP-and-alert row of the shared recovery
+  contract (error-tracking states the table). A bounded retry that keeps
   hitting the same `AuthKeyUnregisteredError` is terminal, not "try harder".
   (A transient `401` a fresh CONNECT fixes — a rotated token elsewhere — is the
   other branch, where a bounded retry or a restart is legitimate.)
