@@ -23,6 +23,10 @@ from urllib.parse import parse_qsl, urlencode
 # --------------------------------------------------------------- the verifier
 
 DEFAULT_MAX_AGE = 300
+# How far into the FUTURE an auth_date may sit (clock skew between Telegram and
+# this host). Without an upper window, a forged-clock auth_date defeats the
+# freshness check forever — it only gets fresher.
+DEFAULT_MAX_SKEW = 30
 
 
 def hmac_check_string(pairs: dict) -> str:
@@ -46,9 +50,26 @@ def ed25519_check_string(bot_id: str, pairs: dict) -> str:
     return f"{bot_id}:WebAppData\n" + "\n".join(f"{k}={keep[k]}" for k in sorted(keep))
 
 
-def verify(init_data: str, bot_token: str, max_age: int = DEFAULT_MAX_AGE) -> dict:
-    """Return the verified fields, or raise. Identity comes from the RETURN value."""
-    pairs = dict(parse_qsl(init_data, strict_parsing=True))
+def verify(init_data: str, bot_token: str, max_age: int = DEFAULT_MAX_AGE,
+           max_skew: int = DEFAULT_MAX_SKEW) -> dict:
+    """Return the verified fields, or raise. Identity comes from the RETURN value.
+
+    Strict input boundaries, each refused BEFORE the signature math (TG-03.02):
+    an unparseable blob is "unparseable", never a stack trace; DUPLICATE fields
+    are refused outright — dict() keeps the last duplicate silently, and
+    "user=innocent&user=admin" is an argument about which copy the HMAC covered
+    that no verifier should be having; auth_date has an upper window too, so a
+    future timestamp cannot out-fresh the freshness check.
+    """
+    try:
+        pair_list = parse_qsl(init_data, strict_parsing=True)
+    except ValueError:
+        raise ValueError("unparseable")
+    keys = [k for k, _ in pair_list]
+    if len(keys) != len(set(keys)):
+        dupes = sorted({k for k in keys if keys.count(k) > 1})
+        raise ValueError(f"duplicate field: {', '.join(dupes)}")
+    pairs = dict(pair_list)
     received = pairs.get("hash")
     if not received:
         raise ValueError("no hash")
@@ -65,8 +86,11 @@ def verify(init_data: str, bot_token: str, max_age: int = DEFAULT_MAX_AGE) -> di
     auth_date = pairs.get("auth_date")
     if auth_date is None:
         raise ValueError("no auth_date")
-    if time.time() - int(auth_date) > max_age:
+    now = time.time()
+    if now - int(auth_date) > max_age:
         raise ValueError("stale")
+    if int(auth_date) - now > max_skew:
+        raise ValueError("auth_date is in the future")
     pairs.pop("hash", None)
     pairs.pop("signature", None)
     return pairs
@@ -187,6 +211,53 @@ def _():
                             hashlib.sha256).digest()          # token as KEY: backwards
     wrong = hmac.new(wrong_secret, check_str.encode(), hashlib.sha256).hexdigest()
     refuses(urlencode({**fields, "hash": wrong}), "a hash built with the derivation reversed")
+
+
+@check("a duplicate field is refused before any signature math")
+def _():
+    data = sign(fresh_fields())
+    refuses(data + "&user=%7B%22id%22%3A1%7D", "user sent twice — dict() keeps the last silently")
+    refuses("auth_date=1&auth_date=2&hash=00", "a duplicated auth_date")
+
+
+@check("an unparseable blob is refused cleanly, not a stack trace")
+def _():
+    for blob in ("not-a-querystring", "a=1&=broken", "&&&"):
+        try:
+            verify(blob, BOT_TOKEN)
+            raise AssertionError(f"accepted unparseable blob {blob!r}")
+        except ValueError as e:
+            assert "unparseable" in str(e) or "no hash" in str(e), \
+                f"the refusal leaks internals: {e}"
+
+
+@check("a future auth_date cannot out-fresh the freshness window")
+def _():
+    future = fresh_fields(auth_date=str(int(time.time()) + 3600))
+    refuses(sign(future), "an auth_date an hour in the future")
+    # inside the skew allowance, a slightly-ahead clock still verifies
+    nearly = fresh_fields(auth_date=str(int(time.time()) + 10))
+    assert verify(sign(nearly), BOT_TOKEN)["query_id"] == "AAPLACEHOLDER"
+
+
+@check("the exact boundary timestamps pass — the windows are strict inequalities")
+def _():
+    # Frozen clock: with real time the edge drifts stale between building the
+    # blob and verifying it, and the check measures the scheduler, not the rule.
+    real = time.time
+    frozen = float(int(real()))
+    time.time = lambda: frozen
+    try:
+        at_age_edge = fresh_fields(auth_date=str(int(frozen) - DEFAULT_MAX_AGE))
+        assert verify(sign(at_age_edge), BOT_TOKEN)
+        at_skew_edge = fresh_fields(auth_date=str(int(frozen) + DEFAULT_MAX_SKEW))
+        assert verify(sign(at_skew_edge), BOT_TOKEN)
+        refuses(sign(fresh_fields(auth_date=str(int(frozen) - DEFAULT_MAX_AGE - 1))),
+                "one second past the age window")
+        refuses(sign(fresh_fields(auth_date=str(int(frozen) + DEFAULT_MAX_SKEW + 1))),
+                "one second past the skew window")
+    finally:
+        time.time = real
 
 
 # Precomputed BY HAND, once, and inlined — deliberately NOT built with sign():

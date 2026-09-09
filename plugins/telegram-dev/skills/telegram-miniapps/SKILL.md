@@ -104,6 +104,12 @@ Five ways this goes wrong, each of which still returns "valid" for somebody:
   helper serving both is how a canonicalization bug verifies itself, and the
   fixture's golden vectors (hand-computed, never derived by the oracle) are
   what catch it: an initData WITH `signature` passes only the correct path.
+- **Duplicates and garbage are refused before any math.** `parse_qsl` hands
+  back a LIST; folding it into a dict keeps the last duplicate silently, and
+  `user=innocent&user=admin` is an argument about which copy the HMAC covered
+  that no verifier should be having. Refuse duplicate fields and unparseable
+  blobs outright — and give `auth_date` an upper window too (clock skew,
+  seconds), because a future timestamp only ever gets fresher.
 - **`auth_date` is not optional.** Without a freshness window a captured
   `initData` is a permanent bearer token. Pick a window, state it, and treat
   anything older as unauthenticated — not as an error to log and continue past.
