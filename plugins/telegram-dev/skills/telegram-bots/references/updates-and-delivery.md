@@ -92,9 +92,21 @@ await bot.set_webhook(
 
 ## `allowed_updates`
 
-Passing nothing, or an empty list, subscribes to **all types except
-`chat_member`, `message_reaction` and `message_reaction_count`**. Those three are
-the ones a moderation or analytics bot most wants, and their absence is silent.
+**Omitting the parameter and passing `[]` are NOT the same** — the skill used to
+say they were, and the official API disagrees:
+
+| You pass | Telegram does |
+|---|---|
+| the parameter UNSET (omitted) | **keeps the PREVIOUS subscription** — no change |
+| `[]` (empty list) | **resets** to all types except `chat_member`, `message_reaction` and `message_reaction_count` |
+| an explicit list | subscribes to exactly those types |
+
+The three the reset drops are the ones a moderation or analytics bot most wants,
+and their absence is silent. So an omission is not a fresh "subscribe to
+everything" — it is "leave whatever was last set", which is why the desired
+subscription is stored on YOUR side and reconciled, never inferred from the
+call. `getWebhookInfo` reports `allowed_updates` as the engine currently holds
+it — that is the evidence, not the parameter you last thought you sent.
 
 - The list is fixed **at subscription time**. Adding a handler does not add a
   subscription; re-run `setWebhook`/`getUpdates` with the new list.
@@ -120,10 +132,15 @@ are free.
 
 ## Ordering, and what it is not
 
-`update_id` increases, so it orders **delivery**. It does not order **events** in
-any way you can act on: two chats are independent, an edit can arrive after a
-later message, and a webhook with `max_connections` above 1 processes out of
-order by design.
+`update_id` increases, so it orders **delivery** — but it is IDENTITY, not a
+perpetual monotonicity guarantee: after a long idle period (Telegram documents
+about a week with no updates) the counter can restart from a new random base, so
+code that assumes "every new update_id is larger than every one I have seen" is
+wrong the first time a bot goes quiet for a week. Use it to identify and
+deduplicate an update (the INSERT key), never as a global sequence you compare
+across a gap. And it does not order **events** in any way you can act on: two
+chats are independent, an edit can arrive after a later message, and a webhook
+with `max_connections` above 1 processes out of order by design.
 
 Derive state from the update's own contents and your stored row, never from the
 order two updates happened to arrive in. Where order genuinely matters — a

@@ -80,10 +80,12 @@ async def webhook(update: Update, db) -> web.Response:
 # done — and a crashed attempt leaves the row pending for the next sweep
 ```
 
-- **`update_id` is the only idempotency key you get.** It is sequential and it is
-  stable across redeliveries. Nothing else in an update identifies it: two
-  identical messages a second apart are two events, and the same event delivered
-  twice is one.
+- **`update_id` is the only idempotency key you get.** It is stable across
+  redeliveries and it identifies an update — but it is IDENTITY, not a forever
+  guarantee of monotonicity: after ~a week idle the counter can restart from a
+  new random base, so never compare update_ids across a long gap to decide
+  "newer". Nothing else in an update identifies it: two identical messages a
+  second apart are two events, and the same event delivered twice is one.
 - **Inbox before ack — a claim is a receipt, not completion.** The `INSERT` on a
   primary key (never a `SELECT` then an `INSERT`: under a webhook up to
   `max_connections`, default 40, deliveries of one update can be in flight at
