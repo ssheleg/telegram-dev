@@ -65,7 +65,9 @@ named owner or it is not a decision.
 ## The session file is the credential
 
 ```python
+import os
 from telethon import TelegramClient
+from telethon.sessions import StringSession
 
 client = TelegramClient(
     session=StringSession(os.environ["TG_SESSION"]),   # from the secret store

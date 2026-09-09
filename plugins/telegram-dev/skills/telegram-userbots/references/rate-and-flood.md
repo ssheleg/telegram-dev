@@ -9,23 +9,53 @@
 `FloodWaitError.seconds` is how long Telegram wants you to wait. It is exact, and
 it is the only number in the situation that is not a guess.
 
+`e.seconds > cap` alone is NOT a stop condition: a stream of SHORT flood
+waits — 100 × 1s, each under the cap — loops forever while the body forbids
+unbounded sleeping. The retry needs a BOUNDED envelope: a wall-clock deadline,
+a cumulative-wait budget, an attempt budget, and a cancellation token; the
+per-call `cap` is backpressure (one wait too long to sit through), the budgets
+are the policy choice about the whole operation.
+
 ```python
-async def call_with_flood(fn, *a, cap=300, **kw):
-    while True:
+import time
+
+async def call_with_flood(fn, *a, cap=300, deadline_s=1800,
+                          max_cumulative_s=900, max_attempts=50,
+                          cancel=None, on_defer=None, **kw):
+    started = time.monotonic()
+    cumulative = 0.0
+    for attempt in range(max_attempts):
+        if cancel is not None and cancel.is_set():
+            raise asyncio.CancelledError("flood retry cancelled")
         try:
             return await fn(*a, **kw)
         except FloodWaitError as e:
-            if e.seconds > cap:
-                log.error("flood_wait_too_long", seconds=e.seconds)
-                raise                      # a limit this long is a decision, not a sleep
-            await asyncio.sleep(e.seconds + 1)
+            wait = e.seconds + 1                 # +1: exact `seconds` lands on the boundary
+            over_cap = e.seconds > cap
+            over_deadline = time.monotonic() - started + wait > deadline_s
+            over_budget = cumulative + wait > max_cumulative_s
+            if over_cap or over_deadline or over_budget:
+                # Bounded: checkpoint the work so it can resume, and DEFER —
+                # do not keep sleeping. A long wait is a policy decision, not a loop.
+                if on_defer is not None:
+                    on_defer(reason="flood", seconds=e.seconds,
+                             cumulative=cumulative, attempt=attempt)
+                log.warning("flood_deferred", seconds=e.seconds, cumulative=cumulative)
+                raise                            # let the caller re-enqueue from the checkpoint
+            cumulative += wait
+            await asyncio.sleep(wait)
+    raise RuntimeError(f"flood retry exhausted {max_attempts} attempts")
 ```
 
+- **The envelope is what stops the loop**, not the single `cap`. 100 × 1s waits
+  hit the cumulative-wait budget (or the attempt budget) and DEFER with a
+  checkpoint — they do not sleep forever.
 - **The `+1` matters**: sleeping exactly `seconds` lands on the boundary and
   earns a second wait.
-- **The cap matters more.** Seconds mean pacing; minutes mean the account is
+- **The cap is backpressure.** Seconds mean pacing; minutes mean the account is
   being limited; hours mean stop and look. Sleeping through an hour-long wait is
-  how a limited account becomes a banned one.
+  how a limited account becomes a banned one — so a wait over the cap defers to
+  the checkpoint queue rather than blocking.
 - **Never sleep inside a request handler.** A flood wait in a web request is an
   outage; in a worker it is a delay.
 
