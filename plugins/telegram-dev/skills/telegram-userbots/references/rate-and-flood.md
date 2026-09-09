@@ -4,6 +4,13 @@
 
 *Read against Telethon 1.44.0 on 2026-08-25.*
 
+## Contents
+
+- [FloodWait is a number, not a condition](#floodwait-is-a-number-not-a-condition)
+- [Pacing that avoids it](#pacing-that-avoids-it)
+- [`takeout` is the sanctioned path for bulk](#takeout-is-the-sanctioned-path-for-bulk)
+- [Errors worth handling by name](#errors-worth-handling-by-name)
+
 ## FloodWait is a number, not a condition
 
 `FloodWaitError.seconds` is how long Telegram wants you to wait. It is exact, and
