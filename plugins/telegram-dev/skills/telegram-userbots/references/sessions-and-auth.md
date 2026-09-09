@@ -70,8 +70,13 @@ A session ends when the user terminates it in Telegram's **Devices** screen, whe
 the password changes, or when Telegram decides. All three look identical to your
 code: an `AuthKeyUnregisteredError` or an unauthorised state on the next call.
 
-- **Detect and alert, naming the account.** Do not retry: reconnecting with a
-  dead session in a loop is a good way to draw attention to the account.
+- **Detect and alert, naming the account.** This is the TERMINAL auth state:
+  the process may be live, but readiness is false and it stays false until a
+  fresh login. Do not retry: reconnecting with a dead session in a loop is a
+  good way to draw attention to the account, and a bounded retry that keeps
+  hitting the same `AuthKeyUnregisteredError` is terminal, not "try harder".
+  (A transient `401` a fresh CONNECT fixes — a rotated token elsewhere — is the
+  other branch, where a bounded retry or a restart is legitimate.)
 - **Have the recreation procedure written down** and runnable by whoever is on
   call, because it needs the phone.
 
