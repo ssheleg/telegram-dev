@@ -1,0 +1,195 @@
+{
+ "contract": "outcome-case/1 (schemas/outcome-case.schema.json + test/outcome_harness.py in ssheleg/sshlg-skills)",
+ "note": "Outcome corpus for telegram-userbots (FIX-EV-01.29). Judged on ARTIFACTS via the family harness: the runner records the actual output oracle verdict AND the raw result per case; with/without-skill arms are the harness's baseline contract. The live-session case is probe-gated on a session string — absent credentials are NOT_RUN, never PASS. Nothing in the production skill was changed for grader convenience.",
+ "arms": {
+  "baseline": "same prompts, skill absent",
+  "current": "same prompts, skill installed"
+ },
+ "cases": [
+  {
+   "schema_version": "outcome-case/1",
+   "id": "TU-OUT-001-positive-floodwait-bounded",
+   "skill": "telegram-userbots",
+   "prompt": {
+    "text": "Against a fake MTProto client that raises 100 consecutive 1-second FloodWaits, show the userbot bounds its retries (bounded timeout/defer, a checkpoint saved, no infinite loop) and record the retry count and outcome in floodwait-report.md."
+   },
+   "environment": {
+    "model": "inherit",
+    "host": "any",
+    "case_digest": "68814bcf663675d1d7427e89d5a91f396a7065a68e0e6fc74c7df3096cadd074"
+   },
+   "checks": {
+    "tool": [
+     {
+      "name": "python3 present",
+      "command": "python3 -c 'pass'"
+     }
+    ],
+    "load_trace": {
+     "expect_loaded": [
+      "telegram-userbots"
+     ],
+     "expect_not_loaded": []
+    },
+    "outcome": [
+     {
+      "name": "report exists",
+      "kind": "artifact-exists",
+      "target": "floodwait-report.md"
+     },
+     {
+      "name": "the retry sequence is bounded (TG-05)",
+      "kind": "artifact-contains",
+      "target": "floodwait-report.md",
+      "expect": "bounded"
+     }
+    ]
+   }
+  },
+  {
+   "schema_version": "outcome-case/1",
+   "id": "TU-OUT-002-negative-routing",
+   "skill": "telegram-userbots",
+   "prompt": {
+    "text": "Explain in two sentences what a webhook is."
+   },
+   "environment": {
+    "model": "inherit",
+    "host": "any",
+    "case_digest": "a5da94aa03520bb6226ea88328a75ab6d7e3985c73a0e90a1379bf168fead57e"
+   },
+   "checks": {
+    "tool": [
+     {
+      "name": "python3 present",
+      "command": "python3 -c 'pass'"
+     }
+    ],
+    "load_trace": {
+     "expect_loaded": [],
+     "expect_not_loaded": [
+      "telegram-userbots"
+     ]
+    },
+    "outcome": [
+     {
+      "name": "no userbot artifact appears",
+      "kind": "command-exit-0",
+      "target": "test ! -f floodwait-report.md"
+     }
+    ]
+   }
+  },
+  {
+   "schema_version": "outcome-case/1",
+   "id": "TU-OUT-003-revoked-session-one-alert",
+   "skill": "telegram-userbots",
+   "prompt": {
+    "text": "A Telegram session was revoked while Sentry is installed. Compose the recovery response: one actionable alert, work stopped, retries capped, no crash loop — write recovery-plan.md."
+   },
+   "environment": {
+    "model": "inherit",
+    "host": "any",
+    "case_digest": "726086c7d87ed7112e7f71f58273e8b0add3664ba41fee4ff06ee6e82a5d9737"
+   },
+   "checks": {
+    "tool": [
+     {
+      "name": "python3 present",
+      "command": "python3 -c 'pass'"
+     }
+    ],
+    "load_trace": {
+     "expect_loaded": [
+      "telegram-userbots"
+     ],
+     "expect_not_loaded": []
+    },
+    "outcome": [
+     {
+      "name": "a dead session is not retried (DV-16)",
+      "kind": "artifact-contains",
+      "target": "recovery-plan.md",
+      "expect": "work stopped"
+     },
+     {
+      "name": "exactly one alert, not a loop",
+      "kind": "artifact-contains",
+      "target": "recovery-plan.md",
+      "expect": "one alert"
+     }
+    ]
+   }
+  },
+  {
+   "schema_version": "outcome-case/1",
+   "id": "TU-OUT-004-noop-self-alert",
+   "skill": "telegram-userbots",
+   "prompt": {
+    "text": "Send yourself one message through your existing bot token as an alert — nothing else. Note what was used in alert-note.md."
+   },
+   "environment": {
+    "model": "inherit",
+    "host": "any",
+    "case_digest": "52008d29a2f3c75ecc6b7b65a6facb34d1f0abd25406cf7036aac8d652860650"
+   },
+   "checks": {
+    "tool": [
+     {
+      "name": "python3 present",
+      "command": "python3 -c 'pass'"
+     }
+    ],
+    "load_trace": {
+     "expect_loaded": [],
+     "expect_not_loaded": [
+      "telegram-userbots"
+     ]
+    },
+    "outcome": [
+     {
+      "name": "the one-call boundary held (a self-alert is transport, not a userbot build)",
+      "kind": "artifact-contains",
+      "target": "alert-note.md",
+      "expect": "one call"
+     }
+    ]
+   }
+  },
+  {
+   "schema_version": "outcome-case/1",
+   "id": "TU-OUT-005-live-session",
+   "skill": "telegram-userbots",
+   "prompt": {
+    "text": "Verify the userbot session string against the live MTProto API (get_me) and record the account username in live-session.md."
+   },
+   "environment": {
+    "model": "inherit",
+    "host": "network",
+    "case_digest": "09ab092fbf213d49be6f0a9bbb9f1f21fae11ac4ad799ae5712c73c88f35cb49"
+   },
+   "checks": {
+    "tool": [
+     {
+      "name": "a session string is configured (absent credentials are NOT_RUN, never PASS)",
+      "command": "test -n \"$TELEGRAM_SESSION\""
+     }
+    ],
+    "load_trace": {
+     "expect_loaded": [
+      "telegram-userbots"
+     ],
+     "expect_not_loaded": []
+    },
+    "outcome": [
+     {
+      "name": "the live identity is recorded",
+      "kind": "artifact-contains",
+      "target": "live-session.md",
+      "expect": "@"
+     }
+    ]
+   }
+  }
+ ]
+}
