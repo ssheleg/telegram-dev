@@ -25,17 +25,35 @@ from urllib.parse import parse_qsl, urlencode
 DEFAULT_MAX_AGE = 300
 
 
+def hmac_check_string(pairs: dict) -> str:
+    """The Bot-API HMAC canonicalization, and ONLY that. `hash` is the value under
+    test and `signature` is the OTHER protocol's input — both excluded here, per
+    the Bot API docs, not per a shared helper's opinion. The Ed25519 path has its
+    own canonicalizer below; one helper serving both is how a canonicalization
+    bug verifies itself (TG-03)."""
+    keep = {k: v for k, v in pairs.items() if k not in ("hash", "signature")}
+    return "\n".join(f"{k}={keep[k]}" for k in sorted(keep))
+
+
+def ed25519_check_string(bot_id: str, pairs: dict) -> str:
+    """The third-party (Ed25519) canonicalization: `{bot_id}:WebAppData` then the
+    sorted pairs with `hash` AND `signature` excluded — per the third-party
+    validation docs. The curve verification itself needs an Ed25519 library
+    (none in the stdlib): this function pins the MESSAGE bytes, and a host
+    without the library reports the curve check NOT_RUN, never skips it into a
+    PASS."""
+    keep = {k: v for k, v in pairs.items() if k not in ("hash", "signature")}
+    return f"{bot_id}:WebAppData\n" + "\n".join(f"{k}={keep[k]}" for k in sorted(keep))
+
+
 def verify(init_data: str, bot_token: str, max_age: int = DEFAULT_MAX_AGE) -> dict:
     """Return the verified fields, or raise. Identity comes from the RETURN value."""
     pairs = dict(parse_qsl(init_data, strict_parsing=True))
-    received = pairs.pop("hash", None)
+    received = pairs.get("hash")
     if not received:
         raise ValueError("no hash")
-    # `signature` is the Ed25519 third-party field. It is NOT part of the HMAC
-    # check string, and leaving it in fails only for clients new enough to send it.
-    pairs.pop("signature", None)
 
-    check = "\n".join(f"{k}={pairs[k]}" for k in sorted(pairs))
+    check = hmac_check_string(pairs)
     # The constant is the KEY and the token is the MESSAGE. Swapped, this produces
     # a stable digest that never matches, and the usual "fix" is to stop checking.
     secret = hmac.new(b"WebAppData", bot_token.encode(), hashlib.sha256).digest()
@@ -49,6 +67,8 @@ def verify(init_data: str, bot_token: str, max_age: int = DEFAULT_MAX_AGE) -> di
         raise ValueError("no auth_date")
     if time.time() - int(auth_date) > max_age:
         raise ValueError("stale")
+    pairs.pop("hash", None)
+    pairs.pop("signature", None)
     return pairs
 
 
@@ -167,6 +187,51 @@ def _():
                             hashlib.sha256).digest()          # token as KEY: backwards
     wrong = hmac.new(wrong_secret, check_str.encode(), hashlib.sha256).hexdigest()
     refuses(urlencode({**fields, "hash": wrong}), "a hash built with the derivation reversed")
+
+
+# Precomputed BY HAND, once, and inlined — deliberately NOT built with sign():
+# a vector the oracle derives shares the oracle's canonicalization, and a shared
+# canonicalization is how a bug verifies itself (TG-03). auth_date is fixed, so
+# the checks pass an explicit max_age instead of racing the clock.
+GOLDEN_WITH_SIGNATURE = (
+    "auth_date=1757000000&query_id=AAPLACEHOLDER"
+    "&user=%7B%22id%22%3A100200300%2C%22first_name%22%3A%22Placeholder%22%2C"
+    "%22username%22%3A%22placeholder%22%7D"
+    "&signature=cGxhY2Vob2xkZXItZWQyNTUxOQ"
+    "&hash=eceadeeed9abe565c6a5982e4f0740e8507dd7de124514912ddf59334bb42e31"
+)
+GOLDEN_ED25519_CHECK = (
+    "1234567:WebAppData\n"
+    "auth_date=1757000000\n"
+    "query_id=AAPLACEHOLDER\n"
+    'user={"id":100200300,"first_name":"Placeholder","username":"placeholder"}'
+)
+WIDE = 10 ** 10  # the vector's fixed auth_date, admitted explicitly
+
+
+@check("the golden vector (with signature) passes only the correct HMAC path")
+def _():
+    got = verify(GOLDEN_WITH_SIGNATURE, BOT_TOKEN, max_age=WIDE)
+    assert got["query_id"] == "AAPLACEHOLDER", "the independent vector did not verify"
+    # The wrong path — signature folded into the HMAC check string, the exact
+    # canonicalization this leaf separates — must REFUSE the same vector.
+    pairs = dict(parse_qsl(GOLDEN_WITH_SIGNATURE, strict_parsing=True))
+    received = pairs.pop("hash")
+    wrong_check = "\n".join(f"{k}={pairs[k]}" for k in sorted(pairs))  # keeps signature
+    secret = hmac.new(b"WebAppData", BOT_TOKEN.encode(), hashlib.sha256).digest()
+    wrong = hmac.new(secret, wrong_check.encode(), hashlib.sha256).hexdigest()
+    assert wrong != received, \
+        "the wrong canonicalization produced the right digest — the vector separates nothing"
+
+
+@check("the Ed25519 canonicalizer is its own function with its own message shape")
+def _():
+    pairs = dict(parse_qsl(GOLDEN_WITH_SIGNATURE, strict_parsing=True))
+    ed = ed25519_check_string("1234567", pairs)
+    assert ed == GOLDEN_ED25519_CHECK, f"the third-party message drifted:\n{ed!r}"
+    assert ed != hmac_check_string(pairs), \
+        "the two canonicalizers produced one string — one helper is serving both protocols"
+    assert ed.startswith("1234567:WebAppData\n"), "the bot-id prefix is gone"
 
 
 def main(argv: list[str]) -> int:

@@ -72,7 +72,7 @@ def verify(init_data: str, bot_token: str) -> dict:
     received = pairs.pop("hash", None)
     if not received:
         raise ValueError("no hash")
-    pairs.pop("signature", None)                              # third-party field, not in the HMAC
+    pairs.pop("signature", None)   # the OTHER protocol's input — see below
 
     check = "\n".join(f"{k}={pairs[k]}" for k in sorted(pairs))
     secret = hmac.new(b"WebAppData", bot_token.encode(), hashlib.sha256).digest()
@@ -95,9 +95,15 @@ Five ways this goes wrong, each of which still returns "valid" for somebody:
   once, not re-encoded, not re-serialised. `user` is a JSON string and must stay
   the exact string that arrived; parsing and re-dumping it changes key order and
   breaks the hash.
-- **Remove `hash` before building the string, and `signature` too.** Leaving
-  `signature` in is the failure that appears only for clients new enough to send
-  it.
+- **Remove `hash` before building the string, and `signature` too — but for
+  the right reason.** `signature` is not junk: it is the Ed25519 path's input,
+  a SEPARATE protocol with a SEPARATE canonicalization (`{bot_id}:WebAppData`
+  prefix, then the sorted pairs without `hash` or `signature`). Keep the two
+  canonicalizers as two functions — `hmac_check_string` and
+  `ed25519_check_string` in `fixtures/verify_initdata.py` — because one shared
+  helper serving both is how a canonicalization bug verifies itself, and the
+  fixture's golden vectors (hand-computed, never derived by the oracle) are
+  what catch it: an initData WITH `signature` passes only the correct path.
 - **`auth_date` is not optional.** Without a freshness window a captured
   `initData` is a permanent bearer token. Pick a window, state it, and treat
   anything older as unauthenticated — not as an error to log and continue past.
