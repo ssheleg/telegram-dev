@@ -5,17 +5,27 @@ money.
 
 *Read against Bot API 10.3 on 2026-08-25.*
 
-## Two ways back, and the button decides which
+## The launch surface decides the way back — and there are more than two
 
-| Opened from | Return with | Shape |
-|---|---|---|
-| A **keyboard** button (`web_app` in `ReplyKeyboardMarkup`) | `WebApp.sendData(data)` | closes the app, delivers `message.web_app_data` to the bot |
-| An **inline** button (`web_app` in `InlineKeyboardMarkup`) or an inline query | `answerWebAppQuery(query_id, result)` | the bot posts the result on the user's behalf |
-| A direct link / menu button | neither — talk to your own backend | the app has no query to answer |
+The way back is fixed by which SURFACE opened the app, and the surfaces are not
+two but several. `query_id` is present in the verified `initData` for exactly
+the surfaces that can `answerWebAppQuery`; where it is absent, that call is not
+an option and the app talks to its own backend.
+
+| Opened from | `query_id`? | Return with | Notes |
+|---|---|---|---|
+| **Keyboard** button (`web_app` in `ReplyKeyboardMarkup`) | no | `WebApp.sendData(data)` | closes the app, delivers `message.web_app_data`; `sendData` is unavailable from any inline context |
+| **Inline keyboard** button (`web_app` in `InlineKeyboardMarkup`) | yes | `answerWebAppQuery(query_id, result)` | the bot posts the result on the user's behalf |
+| **Inline mode** result (the app opened from an inline QUERY) | yes | `answerWebAppQuery(query_id, result)` | distinct from an inline BUTTON — same call, different entry, and it is NOT the same as a keyboard `web_app` |
+| **Menu** button | yes | `answerWebAppQuery(query_id, result)` | the menu button carries inline-button semantics and CAN answer a query — it is not "neither" |
+| **Direct/main/attachment** link | no | talk to your own backend | genuinely no query to answer — this is the only "neither" row |
 
 Choosing the wrong one is not a style question: `sendData` is unavailable from an
-inline context, and `query_id` is absent from `initData` when the app was opened
-from a keyboard button.
+inline context, and `query_id` is absent from `initData` for the no-query
+surfaces above. Read the surface from the launch, not from a guess — and where a
+surface's capability is absent on the running client, **degrade gracefully**
+(fall back to your backend) rather than calling a method the client cannot
+honour.
 
 ## `sendData` is user input
 
