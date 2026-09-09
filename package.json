@@ -44,7 +44,8 @@
     "agent-skills"
   ],
   "scripts": {
-    "test": "python3 test/validate.py && python3 plugins/telegram-dev/skills/telegram-miniapps/fixtures/verify_initdata.py && python3 plugins/telegram-dev/skills/telegram-bots/fixtures/update_delivery.py --self-test && node test/installer_test.js",
-    "test:negatives": "python3 test/validate.py --self-test"
+    "test": "python3 test/validate.py && python3 plugins/telegram-dev/skills/telegram-miniapps/fixtures/verify_initdata.py && python3 plugins/telegram-dev/skills/telegram-bots/fixtures/update_delivery.py --self-test && node test/installer_test.js && npm run test:audit",
+    "test:negatives": "python3 test/validate.py --self-test",
+    "test:audit": "for t in test/audit_regressions/*.py; do python3 \"$t\" || exit 1; done"
   }
 }

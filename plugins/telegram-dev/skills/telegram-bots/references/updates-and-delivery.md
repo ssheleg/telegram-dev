@@ -35,15 +35,30 @@ while True:
     updates = await bot.get_updates(offset=offset, timeout=30,
                                     allowed_updates=WANTED)
     for u in updates:
-        await handle(u)                 # claim on update_id INSIDE handle
-        offset = u.update_id + 1        # confirm only what is done
+        await inbox_put(u.update_id, u) # durable, idempotent on update_id
+        offset = u.update_id + 1        # confirm only what is HELD
+    # a worker drains pending inbox rows; a crashed attempt is retried
 ```
 
 - **`offset` must be the highest id seen plus one.** Sending it is what
   acknowledges the batch; until you do, the same updates come back.
-- **Confirm after the work, not before.** Advancing `offset` first turns a crash
-  into silent data loss; advancing after turns it into a redelivery, which the
-  claim absorbs. Redelivery is the failure you want.
+- **Confirm after the durable write, not before.** Advancing `offset` first turns
+  a crash into silent data loss — Telegram keeps the update 24 hours and you have
+  already said it was taken.
+- **Replies leave through an outbox, and the consumer holds its own key.** The
+  work enqueues the send (key: update id + effect kind); the drain delivers it.
+  A crash between the send and the row's done mark makes the retry re-run the
+  work, and only the outbox key keeps the user from getting the reply twice —
+  the same at-least-once arithmetic as the inbox, pointed outward. The GRANT'S
+  key is the business identity (`telegram_payment_charge_id`), never the
+  `update_id`: one charge arriving in two updates is one payment.
+- **The inbox row is the claim, and it has states.** A redelivery is absorbed by
+  the `INSERT` refusing a duplicate — which is safe *only because* the first
+  insert was durable and a worker owns finishing it. Claim-then-work with a
+  boolean row is the trap: a crash mid-work leaves the claim standing, the
+  redelivery reads "duplicate", and the update is lost while the offset fixture
+  stays green. Receipt and completion are different states
+  (`fixtures/update_delivery.py` watches both crashes fail).
 - `timeout` is long polling proper — the request hangs until an update or the
   timeout. A `timeout=0` loop is a busy poll and will earn 429.
 - **One consumer per token.** Two pollers steal batches from each other, each
@@ -67,17 +82,31 @@ await bot.set_webhook(
   check.
 - **`max_connections` is concurrency**, defaulting to 40. Whatever number you
   choose, two deliveries of one update can overlap — the claim is not optional.
-- Answer 2xx **fast**. Long work belongs in a queue; a slow handler produces
-  retries, and retries produce duplicates.
+- Answer 2xx **fast, and only after the durable write**. The inbox `INSERT` then
+  the 200, work in a worker off the request — a slow handler produces retries,
+  retries produce duplicates, and a 200 answered before the write turns a crash
+  into a lost update Telegram will never resend.
 - `getWebhookInfo` reports `pending_update_count` and `last_error_message`. It is
   the first thing to read when a bot "stopped receiving messages", and it usually
   answers the question outright.
 
 ## `allowed_updates`
 
-Passing nothing, or an empty list, subscribes to **all types except
-`chat_member`, `message_reaction` and `message_reaction_count`**. Those three are
-the ones a moderation or analytics bot most wants, and their absence is silent.
+**Omitting the parameter and passing `[]` are NOT the same** — the skill used to
+say they were, and the official API disagrees:
+
+| You pass | Telegram does |
+|---|---|
+| the parameter UNSET (omitted) | **keeps the PREVIOUS subscription** — no change |
+| `[]` (empty list) | **resets** to all types except `chat_member`, `message_reaction` and `message_reaction_count` |
+| an explicit list | subscribes to exactly those types |
+
+The three the reset drops are the ones a moderation or analytics bot most wants,
+and their absence is silent. So an omission is not a fresh "subscribe to
+everything" — it is "leave whatever was last set", which is why the desired
+subscription is stored on YOUR side and reconciled, never inferred from the
+call. `getWebhookInfo` reports `allowed_updates` as the engine currently holds
+it — that is the evidence, not the parameter you last thought you sent.
 
 - The list is fixed **at subscription time**. Adding a handler does not add a
   subscription; re-run `setWebhook`/`getUpdates` with the new list.
@@ -103,10 +132,15 @@ are free.
 
 ## Ordering, and what it is not
 
-`update_id` increases, so it orders **delivery**. It does not order **events** in
-any way you can act on: two chats are independent, an edit can arrive after a
-later message, and a webhook with `max_connections` above 1 processes out of
-order by design.
+`update_id` increases, so it orders **delivery** — but it is IDENTITY, not a
+perpetual monotonicity guarantee: after a long idle period (Telegram documents
+about a week with no updates) the counter can restart from a new random base, so
+code that assumes "every new update_id is larger than every one I have seen" is
+wrong the first time a bot goes quiet for a week. Use it to identify and
+deduplicate an update (the INSERT key), never as a global sequence you compare
+across a gap. And it does not order **events** in any way you can act on: two
+chats are independent, an edit can arrive after a later message, and a webhook
+with `max_connections` above 1 processes out of order by design.
 
 Derive state from the update's own contents and your stored row, never from the
 order two updates happened to arrive in. Where order genuinely matters — a

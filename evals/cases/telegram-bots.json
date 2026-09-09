@@ -1,0 +1,195 @@
+{
+ "contract": "outcome-case/1 (schemas/outcome-case.schema.json + test/outcome_harness.py in ssheleg/sshlg-skills)",
+ "note": "Outcome corpus for telegram-bots (FIX-EV-01.27). Judged on ARTIFACTS via the family harness: the runner records the actual output oracle verdict AND the raw result per case; with/without-skill arms are the harness's baseline contract. The live-API case is probe-gated on a bot token — absent credentials are NOT_RUN, never PASS. Nothing in the production skill was changed for grader convenience.",
+ "arms": {
+  "baseline": "same prompts, skill absent",
+  "current": "same prompts, skill installed"
+ },
+ "cases": [
+  {
+   "schema_version": "outcome-case/1",
+   "id": "TB-OUT-001-positive-replay-exactly-once",
+   "skill": "telegram-bots",
+   "prompt": {
+    "text": "Extend the crash fixture with a full restart+replay of update 1001 (kill after inbox, after claim, after work, after send) and record per kill point that work includes 1001 exactly once into replay-report.md, distinguishing receipt from effect."
+   },
+   "environment": {
+    "model": "inherit",
+    "host": "any",
+    "case_digest": "12e6071226f724d007f13db400549e301a128fd96d82759cac9406b139618cf7"
+   },
+   "checks": {
+    "tool": [
+     {
+      "name": "python3 present",
+      "command": "python3 -c 'pass'"
+     }
+    ],
+    "load_trace": {
+     "expect_loaded": [
+      "telegram-bots"
+     ],
+     "expect_not_loaded": []
+    },
+    "outcome": [
+     {
+      "name": "report exists",
+      "kind": "artifact-exists",
+      "target": "replay-report.md"
+     },
+     {
+      "name": "exactly-once is asserted per kill point",
+      "kind": "artifact-contains",
+      "target": "replay-report.md",
+      "expect": "1001 exactly once"
+     }
+    ]
+   }
+  },
+  {
+   "schema_version": "outcome-case/1",
+   "id": "TB-OUT-002-negative-routing",
+   "skill": "telegram-bots",
+   "prompt": {
+    "text": "Explain in two sentences what a webhook is."
+   },
+   "environment": {
+    "model": "inherit",
+    "host": "any",
+    "case_digest": "a5da94aa03520bb6226ea88328a75ab6d7e3985c73a0e90a1379bf168fead57e"
+   },
+   "checks": {
+    "tool": [
+     {
+      "name": "python3 present",
+      "command": "python3 -c 'pass'"
+     }
+    ],
+    "load_trace": {
+     "expect_loaded": [],
+     "expect_not_loaded": [
+      "telegram-bots"
+     ]
+    },
+    "outcome": [
+     {
+      "name": "no bot artifact appears",
+      "kind": "command-exit-0",
+      "target": "test ! -f replay-report.md"
+     }
+    ]
+   }
+  },
+  {
+   "schema_version": "outcome-case/1",
+   "id": "TB-OUT-003-allowed-updates-omit-vs-empty",
+   "skill": "telegram-bots",
+   "prompt": {
+    "text": "Against a mock getUpdates that remembers the previous allowed_updates: show that omitting the parameter PRESERVES the stored filter while [] resets it, and that an idle bot past 7 days with a fresh random update id loses no event; write allowed-updates-report.md."
+   },
+   "environment": {
+    "model": "inherit",
+    "host": "any",
+    "case_digest": "ce8c01797cad7258c3ce8e89f80404414d772529c3282366b2e26e8bd4bfcb45"
+   },
+   "checks": {
+    "tool": [
+     {
+      "name": "python3 present",
+      "command": "python3 -c 'pass'"
+     }
+    ],
+    "load_trace": {
+     "expect_loaded": [
+      "telegram-bots"
+     ],
+     "expect_not_loaded": []
+    },
+    "outcome": [
+     {
+      "name": "omit-preserves is demonstrated",
+      "kind": "artifact-contains",
+      "target": "allowed-updates-report.md",
+      "expect": "omit preserves"
+     },
+     {
+      "name": "empty-list-resets is demonstrated",
+      "kind": "artifact-contains",
+      "target": "allowed-updates-report.md",
+      "expect": "[] resets"
+     }
+    ]
+   }
+  },
+  {
+   "schema_version": "outcome-case/1",
+   "id": "TB-OUT-004-noop-alert-message",
+   "skill": "telegram-bots",
+   "prompt": {
+    "text": "Send myself a deployment alert through my existing bot — one sendMessage call, nothing else. Note what was used in alert-note.md."
+   },
+   "environment": {
+    "model": "inherit",
+    "host": "any",
+    "case_digest": "35cf71b4c279beaab40e53b0370ae6b165d6a74836cede324a72622b45ac8cd5"
+   },
+   "checks": {
+    "tool": [
+     {
+      "name": "python3 present",
+      "command": "python3 -c 'pass'"
+     }
+    ],
+    "load_trace": {
+     "expect_loaded": [],
+     "expect_not_loaded": [
+      "telegram-bots"
+     ]
+    },
+    "outcome": [
+     {
+      "name": "the one-HTTP-call boundary held (the router's own NOT-through-it case: an alert is transport, not a platform build)",
+      "kind": "artifact-contains",
+      "target": "alert-note.md",
+      "expect": "one call"
+     }
+    ]
+   }
+  },
+  {
+   "schema_version": "outcome-case/1",
+   "id": "TB-OUT-005-live-getme",
+   "skill": "telegram-bots",
+   "prompt": {
+    "text": "Verify the bot token against the live Bot API (getMe) and record the bot username in live-check.md."
+   },
+   "environment": {
+    "model": "inherit",
+    "host": "network",
+    "case_digest": "abf1bd83a951454541e50f3afd0d6361cbf232176a181dc5018d1972a76609b1"
+   },
+   "checks": {
+    "tool": [
+     {
+      "name": "a bot token is configured (absent credentials are NOT_RUN, never PASS)",
+      "command": "test -n \"$TELEGRAM_BOT_TOKEN\""
+     }
+    ],
+    "load_trace": {
+     "expect_loaded": [
+      "telegram-bots"
+     ],
+     "expect_not_loaded": []
+    },
+    "outcome": [
+     {
+      "name": "the live identity is recorded",
+      "kind": "artifact-contains",
+      "target": "live-check.md",
+      "expect": "@"
+     }
+    ]
+   }
+  }
+ ]
+}

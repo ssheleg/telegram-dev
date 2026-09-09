@@ -43,7 +43,11 @@ Every WebApp method has a minimum Bot API version, and `WebApp.version` tells yo
 what the client supports. `WebApp.isVersionAtLeast('8.0')` is the guard;
 calling a newer method on an older client does nothing and reports nothing.
 
-Recent additions worth knowing about, all 8.0+: `requestFullscreen()`,
+Recent additions worth knowing about, introduced in the 8.0 line — but the
+version floor is necessary, not sufficient: **each method has its OWN capability
+and must be checked at runtime**, not assumed from `isVersionAtLeast('8.0')`
+(a client can advertise 8.0 and still not expose a given method; `DeviceStorage`
+and `SecureStorage` in particular gate per method). `requestFullscreen()`,
 `addToHomeScreen()`, `DeviceStorage` (~5 MB) and `SecureStorage`, `shareMessage()`,
 `downloadFile()`, `shareToStory()`, and the sensor APIs (`Accelerometer`,
 `DeviceOrientation`, `Gyroscope`, `LocationManager`).

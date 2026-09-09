@@ -1,0 +1,201 @@
+{
+ "contract": "outcome-case/1 (schemas/outcome-case.schema.json + test/outcome_harness.py in ssheleg/sshlg-skills)",
+ "note": "Outcome corpus for telegram-miniapps (FIX-EV-01.28). Judged on ARTIFACTS via the family harness: the runner records the actual output oracle verdict AND the raw result per case; with/without-skill arms are the harness's baseline contract. The differential case is probe-gated on an independent verifier library — absent tooling is NOT_RUN, never PASS. Nothing in the production skill was changed for grader convenience.",
+ "arms": {
+  "baseline": "same prompts, skill absent",
+  "current": "same prompts, skill installed"
+ },
+ "cases": [
+  {
+   "schema_version": "outcome-case/1",
+   "id": "TM-OUT-001-positive-hmac-signature-field",
+   "skill": "telegram-miniapps",
+   "prompt": {
+    "text": "Verify a golden real-format initData blob that carries BOTH hash and signature fields against the fixture verifier (plugins/telegram-dev/skills/telegram-miniapps/fixtures/verify_initdata.py): show it passes HMAC with signature present, fails when signature is altered, and that Ed25519 mode excludes both fields; write hmac-report.md."
+   },
+   "environment": {
+    "model": "inherit",
+    "host": "any",
+    "case_digest": "0ca7cc5d2e61efc3ffa2523adfd2c59e7cb63953e7003d3d4dab8f32847500e7"
+   },
+   "checks": {
+    "tool": [
+     {
+      "name": "python3 present",
+      "command": "python3 -c 'pass'"
+     }
+    ],
+    "load_trace": {
+     "expect_loaded": [
+      "telegram-miniapps"
+     ],
+     "expect_not_loaded": []
+    },
+    "outcome": [
+     {
+      "name": "report exists",
+      "kind": "artifact-exists",
+      "target": "hmac-report.md"
+     },
+     {
+      "name": "the signature-field behaviour is pinned",
+      "kind": "artifact-contains",
+      "target": "hmac-report.md",
+      "expect": "signature"
+     }
+    ]
+   }
+  },
+  {
+   "schema_version": "outcome-case/1",
+   "id": "TM-OUT-002-negative-routing",
+   "skill": "telegram-miniapps",
+   "prompt": {
+    "text": "Explain in two sentences what a webhook is."
+   },
+   "environment": {
+    "model": "inherit",
+    "host": "any",
+    "case_digest": "a5da94aa03520bb6226ea88328a75ab6d7e3985c73a0e90a1379bf168fead57e"
+   },
+   "checks": {
+    "tool": [
+     {
+      "name": "python3 present",
+      "command": "python3 -c 'pass'"
+     }
+    ],
+    "load_trace": {
+     "expect_loaded": [],
+     "expect_not_loaded": [
+      "telegram-miniapps"
+     ]
+    },
+    "outcome": [
+     {
+      "name": "no verifier artifact appears",
+      "kind": "command-exit-0",
+      "target": "test ! -f hmac-report.md"
+     }
+    ]
+   }
+  },
+  {
+   "schema_version": "outcome-case/1",
+   "id": "TM-OUT-003-future-auth-date-refused",
+   "skill": "telegram-miniapps",
+   "prompt": {
+    "text": "Against the fixture verifier, show that an auth_date 24 hours in the future is refused (max_skew) while the exact boundary passes under a frozen clock; write skew-report.md."
+   },
+   "environment": {
+    "model": "inherit",
+    "host": "any",
+    "case_digest": "f6773a4cbd646afe65c936ac5d6eef83a85d09406d21329dfa6bb9bbf2e8891f"
+   },
+   "checks": {
+    "tool": [
+     {
+      "name": "python3 present",
+      "command": "python3 -c 'pass'"
+     }
+    ],
+    "load_trace": {
+     "expect_loaded": [
+      "telegram-miniapps"
+     ],
+     "expect_not_loaded": []
+    },
+    "outcome": [
+     {
+      "name": "the future refusal is recorded",
+      "kind": "artifact-contains",
+      "target": "skew-report.md",
+      "expect": "future"
+     },
+     {
+      "name": "the boundary pass is recorded",
+      "kind": "artifact-contains",
+      "target": "skew-report.md",
+      "expect": "boundary"
+     }
+    ]
+   }
+  },
+  {
+   "schema_version": "outcome-case/1",
+   "id": "TM-OUT-004-launch-surface-matrix",
+   "skill": "telegram-miniapps",
+   "prompt": {
+    "text": "Build the launch-surface scenario matrix (main button, inline button, menu button, direct link): which modes carry query_id, which API each may call, and how an absent capability degrades gracefully; write surfaces-report.md."
+   },
+   "environment": {
+    "model": "inherit",
+    "host": "any",
+    "case_digest": "eee562197e0663ebe03434c3bbdea7d07f05419ba20c9e654524a8e073fb87e1"
+   },
+   "checks": {
+    "tool": [
+     {
+      "name": "python3 present",
+      "command": "python3 -c 'pass'"
+     }
+    ],
+    "load_trace": {
+     "expect_loaded": [
+      "telegram-miniapps"
+     ],
+     "expect_not_loaded": []
+    },
+    "outcome": [
+     {
+      "name": "the menu-button row allows inline-button semantics (TG-04)",
+      "kind": "artifact-contains",
+      "target": "surfaces-report.md",
+      "expect": "menu"
+     },
+     {
+      "name": "graceful degradation is stated, not assumed",
+      "kind": "artifact-contains",
+      "target": "surfaces-report.md",
+      "expect": "degrad"
+     }
+    ]
+   }
+  },
+  {
+   "schema_version": "outcome-case/1",
+   "id": "TM-OUT-005-differential-verifier",
+   "skill": "telegram-miniapps",
+   "prompt": {
+    "text": "Run the fixture verifier's golden blobs through an independent initData verifier library and record verdict agreement per blob in differential.md."
+   },
+   "environment": {
+    "model": "inherit",
+    "host": "differential",
+    "case_digest": "f11a6594013dbda2e46bcab6667bdfa5086af6f0b41f191af15a2be323d21b59"
+   },
+   "checks": {
+    "tool": [
+     {
+      "name": "an independent verifier is importable (absent tooling is NOT_RUN, never PASS)",
+      "command": "python3 -c 'import init_data_py'"
+     }
+    ],
+    "load_trace": {
+     "expect_loaded": [
+      "telegram-miniapps"
+     ],
+     "expect_not_loaded": []
+    },
+    "outcome": [
+     {
+      "name": "per-blob agreement is recorded",
+      "kind": "artifact-contains",
+      "target": "differential.md",
+      "expect": "agree"
+     }
+    ]
+   }
+  }
+ ]
+}

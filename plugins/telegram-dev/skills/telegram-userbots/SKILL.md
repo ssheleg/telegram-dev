@@ -65,7 +65,9 @@ named owner or it is not a decision.
 ## The session file is the credential
 
 ```python
+import os
 from telethon import TelegramClient
+from telethon.sessions import StringSession
 
 client = TelegramClient(
     session=StringSession(os.environ["TG_SESSION"]),   # from the secret store
@@ -146,9 +148,19 @@ Detail in [`references/entities-and-history.md`](references/entities-and-history
 
 A userbot has a second failure mode a bot does not: **the human logs in
 somewhere, changes the password, or terminates sessions**, and your process dies
-holding a session that is no longer valid. Treat it as an expected event —
-surface it as an alert with the account named, not as a crash loop — and never
-put a userbot on the critical path of something a bot could serve.
+holding a session that is no longer valid. This is a **terminal / revoked**
+auth state, not a transient one: the process may still be LIVE, but it is NOT
+READY, and a restart just re-loops a login that can never succeed. Surface it
+as an alert with the account named, stop work until FRESH auth (a re-login that
+needs the phone), and never a crash loop — the same three-state contract
+`sheleg-dev`'s error-tracking states for any long-lived authenticated
+connection: liveness, readiness, degraded_auth (transient retries, terminal
+stops). **A supervisor restart is for the `recoverable` policy only**; a
+revoked session is `terminal` and lands on the STOP-and-alert row of that
+skill's recovery-contract table, so the identical event cannot draw opposite
+actions in the two packs. Never put a userbot on the critical path of
+something a bot could
+serve.
 
 ## Before you ship
 
