@@ -1,3 +1,12 @@
+## v0.2.0 — the userbot reference stops hiding its second half
+
+Sherlock external-v3 (12 findings) plus the House audit gap that surfaced with them.
+
+- `telegram-userbots/references/rate-and-flood.md` passed 100 lines and had no
+  `## Contents` list. FloodWait pacing, the sanctioned `takeout` path and the
+  errors worth handling by name were all past the fold an agent previews.
+- CI now MEASURES the token budget with a real tokenizer instead of estimating it.
+
 ## v0.1.11 — a $schema that resolved to nothing, in both manifests
 
 Both manifests declared `https://json.schemastore.org/claude-code-plugin.json`.
