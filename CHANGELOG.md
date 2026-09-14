@@ -1,4 +1,4 @@
-## 0.2.1 — the README names both ways to reach a skill
+## v0.2.1 — the README names both ways to reach a skill
 
 Hygiene from the 2026-09-13 family audit (HK-11). The install section showed four
 channels and no invocation form, so a reader who installed the pack had nothing telling
