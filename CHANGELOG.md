@@ -1,3 +1,11 @@
+## v0.2.1 — the README names both ways to reach a skill
+
+Hygiene from the 2026-09-13 family audit (HK-11). The install section showed four
+channels and no invocation form, so a reader who installed the pack had nothing telling
+them what to type. Both forms are written — `/telegram-dev:<skill>` and `/<skill>` —
+because which one resolves depends on how the pack was installed, and promising one is
+how a reader concludes the skill is not there.
+
 ## v0.2.0 — the userbot reference stops hiding its second half
 
 Sherlock external-v3 (12 findings) plus the House audit gap that surfaced with them.
