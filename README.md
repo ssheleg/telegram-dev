@@ -109,6 +109,11 @@ The whole family in one command:
 npx sshlg-skills install
 ```
 
+**Reaching a skill by name.** Claude Code routes on the description and both
+invocation forms work: `/telegram-dev:telegram-bots` names the plugin's copy
+explicitly, `/telegram-bots` the plain one. Which of the two resolves depends on how
+this pack was installed, so both are written here rather than one promised.
+
 ## Development
 
 <!-- commands-run-in: a clone -->
