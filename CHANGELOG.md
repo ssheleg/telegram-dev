@@ -1,3 +1,24 @@
+## v0.2.2 — «добавь Telegram-бота» reaches the bot skill
+
+The 2026-10-08 family routing audit found that a request written with the inflected or
+Latin-script name of a bot — «добавь Telegram-бота» — loaded no skill at all. The
+`telegram-bots` description carried «телеграм бот» with a space and nothing else, and
+a match on words cannot see one form inside another.
+
+- **`telegram-bots` now names «Telegram-бот», «Telegram-бота» and «телеграм-бота» in
+  its first sentence,** beside "Telegram bot". They lead rather than join the trigger
+  list at the end, because harness listings cut long descriptions and the cut falls
+  well before the `Triggers -` clause. The description is 958 characters, inside the
+  970 house limit.
+- **The trigger corpus gains `q13`** («добавь Telegram-бота в проект», should trigger),
+  held out in the validation split. It is data for the next measured run, not a result:
+  `test/evals/RESULTS.md` still records no model runs.
+- **The house-limit plant now derives its padding.** It appended a fixed run of words,
+  which at 905 characters landed between 970 and 1024; at 958 it overshot the 1024 cap,
+  and `npm run test:negatives` reported the plant BROKEN because the validator refused
+  it for the cap rather than the house limit. The plant now computes the length that
+  lands midway between the two limits, so the next description edit cannot silence it.
+
 ## v0.2.1 — the README names both ways to reach a skill
 
 Hygiene from the 2026-09-13 family audit (HK-11). The install section showed four

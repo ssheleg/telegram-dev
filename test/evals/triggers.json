@@ -16,7 +16,8 @@
       "q06",
       "q10",
       "q11",
-      "q12"
+      "q12",
+      "q13"
     ]
   },
   "queries": [
@@ -103,6 +104,13 @@
       "query": "Build the same workflow as a Slack bot",
       "should_trigger": false,
       "why": "Telegram is not the platform"
+    },
+    {
+      "id": "q13",
+      "lang": "ru",
+      "query": "добавь Telegram-бота в проект",
+      "should_trigger": true,
+      "why": "inflected Latin-script form; the 2026-10-08 routing audit found it reached no skill"
     }
   ]
 }
