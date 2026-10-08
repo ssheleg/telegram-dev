@@ -443,11 +443,27 @@ def check_routed_triggers_still_advertised():
 
 # ------------------------------------------------------------------- self-test
 
+def _pad_description_past_house(text: str) -> str:
+    """Grow the description to land BETWEEN the house limit and the spec cap.
+
+    Derived, never written: a literal run of padding words planted the house-limit
+    defect only while the description stayed short. At 958 characters the same
+    padding overshot 1024 and the plant reported the cap instead of the house limit
+    (found at v0.2.2), so the length to add is computed from the description itself.
+    """
+    m = re.match(r"^---\n(.*?)\n---\n", text, re.S)
+    desc = scalar(m.group(1), "description") if m else None
+    if not desc or len(desc) >= DESC_HOUSE:
+        return text  # nothing to plant — reported BROKEN as "changed nothing"
+    need = (DESC_HOUSE + DESC_MAX) // 2 - len(desc) - 1  # -1: the joining space
+    filler = ("padding " * (need // 8 + 2))[:need].rstrip() or "p"
+    filler += "x" * (need - len(filler))
+    return text.replace("license: MIT", f"  {filler}\nlicense: MIT", 1)
+
+
 PLANTS = (
     ("a description over the house limit", "plugins/telegram-dev/skills/telegram-bots/SKILL.md",
-     lambda t: t.replace("license: MIT", "  padding padding padding padding padding padding "
-                         "padding padding padding padding padding padding padding padding\n"
-                         "license: MIT", 1), "past the"),
+     _pad_description_past_house, "past the"),
     ("a front-matter name that does not match the directory",
      "plugins/telegram-dev/skills/telegram-bots/SKILL.md",
      lambda t: t.replace("name: telegram-bots", "name: telegram-bot", 1), "must equal the directory"),
