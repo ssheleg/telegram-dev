@@ -54,6 +54,14 @@
     {
       "from": "docs/evidence/fw00-verification-index-20261013/README.md",
       "target": "../member-gates-20261013/README.md"
+    },
+    {
+      "from": "docs/evidence/fw00-verification-index-20261013/README.md",
+      "target": "focused.json"
+    },
+    {
+      "from": "docs/evidence/fw00-verification-index-20261013/README.md",
+      "target": "hub-reader.json"
     }
   ],
   "structural": {
@@ -63,5 +71,10 @@
     "stderr": ""
   },
   "broad_owner_gates": "QUEUED_AFTER_TP_FULL",
-  "native_provider_model": "NOT_RUN"
+  "native_provider_model": "NOT_RUN",
+  "indexed_document_sha256": {
+    "docs/evidence/verification.md": "3ec1f97833e8f18978313a37c9626b07744d814e731491883ded18d5c72973f9",
+    "docs/HANDOFF.md": "02ced5519f8340e30c84bb2cb561d11782eb0c96a2931e79847aa30f86c23664",
+    "docs/evidence/fw00-verification-index-20261013/README.md": "f428af816af5c68f215b51e04469e24624584b49fb48a3263b15f2a1d04a05ec"
+  }
 }
