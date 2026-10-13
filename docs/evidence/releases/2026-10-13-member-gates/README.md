@@ -29,10 +29,28 @@ Hub pins and global installation belong to the coordinating hub wave.
 
 ## Current state and next task
 
-Plan committed before the metadata change. Local release-candidate checks, PR
-admission, tag creation, publication and installation are **NOT_RUN** here.
-Next: synchronize version metadata, then perform step 2 after the current FW04
-full gate finishes. No model/provider/native-runtime acceptance is inferred.
+Plan committed before the metadata change. PR admission, tag creation, publication and installation remain pending.
+Next: freeze this receipt, push, then promote the reviewed draft once. No model/provider/native-runtime acceptance is inferred.
 
 Skills used: make-skill (release construction), task-pipeline (delivery),
 agent-sync (local advisory ownership), evidence-docs (source and check receipts).
+
+## Candidate review and payload
+
+The coordinator independently reviewed `a700bd2e85244c61ce0a72bace63ee7f37768fea`: **PASS**. Version fields,
+new changelog and existing skill metadata agree; there is no executable or workflow
+diff.
+`npm pack --dry-run --json` exited 0: 22 files, 146707 unpacked bytes;
+no `.env`, agent-sync state or Python cache residue. Both common gate files retain
+the same SHA-256 digests as the independently reviewed FW02 source wave.
+
+Draft [PR 13](https://github.com/ssheleg/telegram-dev/pull/13) preserves the
+no-per-push CI policy until local checks finish.
+
+## Local candidate checks
+
+`npm test`: structural 15, fixture checks, delivery invariants, installer 11 and audit regressions pass. `npm run test:negatives`: 15 owner plants plus 42 member process controls pass. Both strict Claude manifests pass. `git diff --check` passes.
+All test and strict-validation commands exited 0. Telegram's initial diff check
+found one receipt trailing space; it was removed and that check passed.
+The owner gate reports routed-trigger checks as unlooked outside the umbrella;
+this does not imply native/model or family-install acceptance.
