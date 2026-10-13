@@ -1,0 +1,166 @@
+{
+  "schema": "member-owner-published-readback/1",
+  "sourceReceipt": "https://github.com/ssheleg/sshlg-skills/blob/d798f3812d7b77288154502f757ab24248f3ee53/docs/evidence/completion-1013/member-release-readback.json",
+  "receipt": {
+    "repo": "telegram-dev",
+    "version": "0.2.4",
+    "tag": "v0.2.4",
+    "source": "35bb98527884df798c4120957452ba37bae01e90",
+    "tagReadback": "c8d7e57d6b1145634871a2716da5d1194135f4f5\trefs/tags/v0.2.4\n35bb98527884df798c4120957452ba37bae01e90\trefs/tags/v0.2.4^{}",
+    "run": {
+      "conclusion": "success",
+      "databaseId": 38340360324,
+      "event": "push",
+      "headBranch": "v0.2.4",
+      "headSha": "35bb98527884df798c4120957452ba37bae01e90",
+      "status": "completed",
+      "url": "https://github.com/ssheleg/telegram-dev/actions/runs/38340360324"
+    },
+    "githubRelease": {
+      "isDraft": false,
+      "isPrerelease": false,
+      "tagName": "v0.2.4",
+      "targetCommitish": "main",
+      "url": "https://github.com/ssheleg/telegram-dev/releases/tag/v0.2.4"
+    },
+    "registryVersion": "0.2.4",
+    "registryIntegrity": "sha512-N3TLgzxgnkPlypknqVcEaWgVUOu3eByZ3SBvi7yRKF01PaZZ1+A5qQTHRXPcyiE07mSFLHdcsi1/r6IJ6oIEHw==",
+    "tarballSha256": "1e1b0cf271aaf27b3ae6ccb4bd610871bbebb6fd55e5ed0e6a501debc49df954",
+    "allPackagedFilesByteEqual": true,
+    "fileCount": 22,
+    "files": [
+      {
+        "path": "CHANGELOG.md",
+        "sha256": "d471918f23e882259cc64560e5644f106cb47b956d1606e77c9250ebf39434ea",
+        "bytes": 21473
+      },
+      {
+        "path": "LICENSE",
+        "sha256": "826df230e15df9b208c1e08c42ef3b764b21c4abec5a91a38976748e92a82e9d",
+        "bytes": 1064
+      },
+      {
+        "path": "README.md",
+        "sha256": "cccb6014c00d582c51acdec6940eee20c3220a92f080f368ad8b8f1c933bbc36",
+        "bytes": 7383
+      },
+      {
+        "path": "SECURITY.md",
+        "sha256": "5c92a9addb33f9ed543e5d68efeedd78eaa850194fc97b21d428627ac91a51f0",
+        "bytes": 2426
+      },
+      {
+        "path": "bin/telegram-dev.js",
+        "sha256": "1b3145df9d49a478919c4743025a564609d95c97bbbee58ed6f6191619c0bc9b",
+        "bytes": 7078
+      },
+      {
+        "path": "package.json",
+        "sha256": "71a6d15754c8ca33f36f95876db68c9db9d42f89e4313f4ca692a4c3380e9fae",
+        "bytes": 1502
+      },
+      {
+        "path": "plugins/telegram-dev/.claude-plugin/plugin.json",
+        "sha256": "ee85c8604d73dbda3bd7ede7b17d4918176457d227b7dddc79892236e5e827ef",
+        "bytes": 1375
+      },
+      {
+        "path": "plugins/telegram-dev/skills/telegram-bots/SKILL.md",
+        "sha256": "c58b2efbeca6b4844a929028bc1b1f6f8351b14f45367be678e4f8ceaa454cc2",
+        "bytes": 11642
+      },
+      {
+        "path": "plugins/telegram-dev/skills/telegram-bots/fixtures/update_delivery.py",
+        "sha256": "3837eb0a9e13bf4920abdb7f2333699bf6768187544c457f780d108916153733",
+        "bytes": 19980
+      },
+      {
+        "path": "plugins/telegram-dev/skills/telegram-bots/references/frameworks.md",
+        "sha256": "d2c70658590eea1e4869b5628d9a105688a935dfd6f821bd6bcb3b255ae7dfaf",
+        "bytes": 2947
+      },
+      {
+        "path": "plugins/telegram-dev/skills/telegram-bots/references/limits-and-files.md",
+        "sha256": "736ddf059f83128b567668bd198014d4dffb0f36c6c6bb0db21a7d4d12d1303b",
+        "bytes": 2785
+      },
+      {
+        "path": "plugins/telegram-dev/skills/telegram-bots/references/payments-stars.md",
+        "sha256": "5dfc88e5d9803362680bb06a7c39828a3f4e8c50fed6fe991928085359b8605b",
+        "bytes": 3362
+      },
+      {
+        "path": "plugins/telegram-dev/skills/telegram-bots/references/updates-and-delivery.md",
+        "sha256": "96c458272c7e3a506f8131af1009a492d7b5ea77ef0decee93427faec6e534ad",
+        "bytes": 7214
+      },
+      {
+        "path": "plugins/telegram-dev/skills/telegram-miniapps/SKILL.md",
+        "sha256": "62fb97b5e2cb39f80ccf0d9794a68b36f9702594f7b1196412118dd41f0aff5a",
+        "bytes": 10157
+      },
+      {
+        "path": "plugins/telegram-dev/skills/telegram-miniapps/fixtures/verify_initdata.py",
+        "sha256": "b79a60d87883be9ab1bb2233b0ac35ed9589f0f42399ebd7c7225892cb033748",
+        "bytes": 13153
+      },
+      {
+        "path": "plugins/telegram-dev/skills/telegram-miniapps/references/app-to-bot.md",
+        "sha256": "e596fa35344f8321731d28530dce1372675362314b8267b017bcd7fa9ae9eac4",
+        "bytes": 3745
+      },
+      {
+        "path": "plugins/telegram-dev/skills/telegram-miniapps/references/initdata-verification.md",
+        "sha256": "14910465fb65e6a233eb66e7efcf38da0b69c91d0d9dd7e6edde9a57067c2287",
+        "bytes": 5677
+      },
+      {
+        "path": "plugins/telegram-dev/skills/telegram-miniapps/references/viewport-and-platform.md",
+        "sha256": "4955d62075e28780f32eebd17a2b2023346a53bd7f5a110846fd94dc524751bc",
+        "bytes": 3090
+      },
+      {
+        "path": "plugins/telegram-dev/skills/telegram-userbots/SKILL.md",
+        "sha256": "ab961479c3ee0a671ccccdb33cebb72009a5e13f0e3e89bbff1f0dd4df40e412",
+        "bytes": 8652
+      },
+      {
+        "path": "plugins/telegram-dev/skills/telegram-userbots/references/entities-and-history.md",
+        "sha256": "fe335934882830af02b0489f2f9d2a58d5cbb44d8abbce5fb8c41d263b683ece",
+        "bytes": 2668
+      },
+      {
+        "path": "plugins/telegram-dev/skills/telegram-userbots/references/rate-and-flood.md",
+        "sha256": "85758d9c15537d5234de5bb465e8f842e35c4d0d2160964c625dba6c1bb90f47",
+        "bytes": 5030
+      },
+      {
+        "path": "plugins/telegram-dev/skills/telegram-userbots/references/sessions-and-auth.md",
+        "sha256": "fa1949c0988cdb950decfe800540f3410a559e329fb5099982166dbbf2e3375e",
+        "bytes": 4304
+      }
+    ],
+    "nonRepoNpmHelp": {
+      "exit": 0,
+      "isolatedHome": true,
+      "installedSkills": false
+    },
+    "acceptance": "published payload equals tagged source; help works; not native installed-hook or model-quality acceptance",
+    "repositoryOnlySuccessor": {
+      "source": "711576f89d06525ee94ad4aac0f779a5baeefdd5",
+      "candidate": "fbac55f1ed9c7a1ecbf3cd556d1ce0ea5af38a00",
+      "pr": "https://github.com/ssheleg/telegram-dev/pull/14",
+      "eligibleRun": {
+        "conclusion": "success",
+        "databaseId": 38344014201,
+        "event": "pull_request",
+        "headSha": "fbac55f1ed9c7a1ecbf3cd556d1ce0ea5af38a00",
+        "status": "completed",
+        "url": "https://github.com/ssheleg/telegram-dev/actions/runs/38344014201"
+      },
+      "reviewedTreeEqualsMerged": true,
+      "publishedPayloadByteEqual": true,
+      "reason": "test comments and own evidence only; published version/tag unchanged"
+    }
+  }
+}

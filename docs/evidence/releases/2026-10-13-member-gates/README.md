@@ -29,8 +29,9 @@ Hub pins and global installation belong to the coordinating hub wave.
 
 ## Current state and next task
 
-Plan committed before the metadata change. PR admission, tag creation, publication and installation remain pending.
-Next: freeze this receipt, push, then promote the reviewed draft once. No model/provider/native-runtime acceptance is inferred.
+Published and byte-verified; see [the final receipt](#published-readback).
+Next: coordinator reconciles family pins and global installation separately.
+No model/provider/native-runtime acceptance is inferred.
 
 Skills used: make-skill (release construction), task-pipeline (delivery),
 agent-sync (local advisory ownership), evidence-docs (source and check receipts).
@@ -54,3 +55,30 @@ All test and strict-validation commands exited 0. Telegram's initial diff check
 found one receipt trailing space; it was removed and that check passed.
 The owner gate reports routed-trigger checks as unlooked outside the umbrella;
 this does not imply native/model or family-install acceptance.
+
+
+## Published readback
+
+The new annotated `v0.2.4` resolves to merged source
+`35bb98527884df798c4120957452ba37bae01e90`. [Release run 38340360324](https://github.com/ssheleg/telegram-dev/actions/runs/38340360324)
+completed successfully on that exact tag/source, and the [GitHub release](https://github.com/ssheleg/telegram-dev/releases/tag/v0.2.4)
+and exact npm package `@ssheleg/telegram-dev@0.2.4` were observed.
+No historical tag was changed.
+
+The [owner machine receipt](published-readback.json) records registry integrity,
+tarball SHA-256 and every packaged file's hash/size. All 22 files matched
+tagged source byte-for-byte. Isolated `npm exec --yes --package=@ssheleg/telegram-dev@0.2.4 -- telegram-dev --help`
+exited 0 without installing skills. The later repository-only header successor
+`711576f89d06525ee94ad4aac0f779a5baeefdd5` also matched every published payload byte.
+
+This follow-up closes GATE-01 and GATE-02's source/publication scope from observed
+evidence. It changes documentation only, preserves package version and payload,
+and does not claim installation, native agent use or older releases were tested.
+Exact next task: coordinator consumes these final board states and publication
+receipts in its family-pin/install wave.
+
+Documentation reconciliation checks: `python3 test/validate.py` and
+`git diff --check` exited 0. `npm pack --dry-run --json` exited 0; all
+22 payload paths and SHA-256 hashes still matched the published receipt.
+No implementation or test code changed, so the prior implementation gates remain
+the source evidence; eligible PR validation will apply to this frozen successor.
