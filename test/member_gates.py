@@ -1,3 +1,6 @@
+# shared-mechanism: sshlg-skills/member-gates-v1
+# diverges: none
+# Copies: telegram-dev, xr-dev, web3d-dev; change and verify the family together.
 """Portable owner gates, shared byte-for-byte by the FW02 member wave.
 
 Stdlib only. Release validation checks the current workflow's structural contract,

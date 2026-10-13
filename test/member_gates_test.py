@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# shared-mechanism: sshlg-skills/member-gates-test-v1
+# diverges: none
+# Copies: telegram-dev, xr-dev, web3d-dev; change and verify the family together.
 """Real validator plants for the portable member gate contract; no network."""
 from pathlib import Path
 import os
