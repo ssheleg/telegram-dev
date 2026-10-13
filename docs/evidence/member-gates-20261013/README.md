@@ -22,7 +22,7 @@ The release workflow already carries the ancestry check; this task protects it.
 Use task-pipeline for delivery, make-skill for the plugin's offline gate contract,
 agent-sync for local advisory ownership and evidence-docs for receipts. Existing
 user authorization resolves scope and autonomy; no new operator choice is needed.
-No skill bodies, manifests, versions or workflow triggers change. The release
+No skill bodies, manifests or versions change. The release
 check is a bounded structural contract for the current workflow, not a general
 YAML/Bash interpreter or proof of every possible release bypass.
 
@@ -65,6 +65,21 @@ acceptance result. Release/installation and hub pin updates remain out of scope.
 The member validator discloses routed-trigger checking as unlooked because this
 isolated worktree has no umbrella ancestor. Hosted CI, release, real Telegram
 credentials/provider execution and installed/native model behavior were NOT_RUN.
-Owner workflow triggers are unchanged; branch commits use `[skip ci]` while the
-coordinator reconciles the repository's older all-push/PR workflow with the
-operator's nightly-check policy. No full hosted suite was manually dispatched.
+The coordinator subsequently authorized alignment of validation triggers with
+the standing operator policy: schedule at 23:00 Europe/Warsaw, workflow_call for
+release, and workflow_dispatch requiring a recorded candidate_reason. Automatic
+push/PR triggers are removed. Branch commits use `[skip ci]` before the final
+candidate is reviewed. No full hosted suite was manually dispatched at this
+local verification point; a single explicit frozen-candidate run is the allowed
+exception, not a new per-push policy.
+
+The caller scan found only `release.yml` invoking `validate.yml`; there is no
+Pages/deployment workflow indirectly running it on a branch push. The release
+tag trigger and its dependency on the full validator remain unchanged. The
+workflow was parsed with PyYAML locally (exit 0), asserting the exact three
+events, timezone and required reason; PyYAML is not added to the offline gate.
+GitHub documents [IANA timezone schedules](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule)
+and [dispatch refs](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow),
+read 2026-10-13. Scheduled runs check the default branch, so they do not certify
+this unmerged candidate. The coordinator must match a dispatched run's head SHA
+to the final candidate, never manufacture a required status.
