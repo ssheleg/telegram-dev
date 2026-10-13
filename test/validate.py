@@ -563,9 +563,17 @@ def self_test() -> int:
     return 0
 
 
+@check
+def check_member_board_and_release():
+    from member_gates import check as member_check
+    member_check(ROOT, fail)
+
+
 def main(argv: list[str]) -> int:
     if "--self-test" in argv:
-        return self_test()
+        from member_gates_test import self_test as member_self_test
+        original = self_test()
+        return max(original, member_self_test(ROOT))
     for fn in CHECKS:
         fn()
     for n in _notes:

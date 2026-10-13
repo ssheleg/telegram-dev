@@ -1,8 +1,20 @@
 name: validate
 
 on:
-  push:
+  # One explicit frozen candidate: draft -> ready after local gates and review.
+  # No opened/synchronize/reopened event and no per-push full suite.
   pull_request:
+    types: [ready_for_review]
+  # Full checks run nightly; an urgent, explicit candidate gets one recorded run.
+  schedule:
+    - cron: '0 23 * * *'
+      timezone: Europe/Warsaw
+  workflow_dispatch:
+    inputs:
+      candidate_reason:
+        description: 'Recorded urgent or explicit candidate exception; include task and frozen SHA'
+        required: true
+        type: string
   # Callable, so `release.yml` gates a publish on THIS suite rather than on a copy
   # of it. A second home for the gate is a gate that drifts at one of them.
   workflow_call:
