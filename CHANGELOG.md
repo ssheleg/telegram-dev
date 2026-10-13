@@ -1,3 +1,14 @@
+## v0.2.4 — 2026-10-13
+
+- Validate the owner board's table shape, unique task IDs and immediate Markdown
+  separator before accepting a change.
+- Validate the release job's full-history checkout and refusing ancestry check;
+  reject unsupported or ambiguous workflow shapes. Forty-two process controls
+  cover hostile edits and valid board/workflow forms.
+- Run complete hosted validation nightly at 23:00 Europe/Warsaw or once for an
+  explicitly frozen draft-to-ready candidate. Tag releases retain their existing
+  validation and publication checks.
+
 ## v0.2.3 — a lightweight tag cannot publish a release
 
 - **The release refuses a lightweight tag.** `release.yml` gains one step, right after
