@@ -1,0 +1,99 @@
+{
+  "gated_source": "5d5ecbf4693bcb8c1fd279bb34d3e726127ecbcf",
+  "successor_scope": "Only task-owned docs and process receipts since the exact owner command set; implementation and all packaged bytes unchanged.",
+  "checks": {
+    "structure": {
+      "argv": [
+        "python3",
+        "-B",
+        "test/validate.py"
+      ],
+      "exit_code": 0,
+      "stdout": "  unlooked: routed triggers \u2014 no sshlg-skills umbrella above this checkout\nOK: telegram-dev structurally valid (15 checks, 3 skills, v0.2.4)\n",
+      "stderr": ""
+    },
+    "diff": {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "published_payload_files_equal": 22,
+  "npm_pathset_equal": true,
+  "local_links_resolved": [
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "evidence/verification.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "evidence/fw00-verification-index-20261013/README.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "evidence/releases/2026-10-13-member-gates/README.md#published-readback"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "evidence/fw00-verification-index-20261013/owner-gates.json"
+    },
+    {
+      "source": "docs/evidence/verification.md",
+      "target": "releases/2026-10-13-member-gates/README.md#published-readback"
+    },
+    {
+      "source": "docs/evidence/verification.md",
+      "target": "releases/2026-10-13-member-gates/published-readback.json"
+    },
+    {
+      "source": "docs/evidence/verification.md",
+      "target": "member-gates-20261013/README.md"
+    },
+    {
+      "source": "docs/evidence/verification.md",
+      "target": "member-gates-headers-20261013.md"
+    },
+    {
+      "source": "docs/evidence/verification.md",
+      "target": "backlog.md"
+    },
+    {
+      "source": "docs/evidence/verification.md",
+      "target": "fw00-verification-index-20261013/README.md"
+    },
+    {
+      "source": "docs/evidence/verification.md",
+      "target": "../HANDOFF.md"
+    },
+    {
+      "source": "docs/evidence/fw00-verification-index-20261013/README.md",
+      "target": "../releases/2026-10-13-member-gates/README.md"
+    },
+    {
+      "source": "docs/evidence/fw00-verification-index-20261013/README.md",
+      "target": "../member-gates-20261013/README.md"
+    },
+    {
+      "source": "docs/evidence/fw00-verification-index-20261013/README.md",
+      "target": "focused.json"
+    },
+    {
+      "source": "docs/evidence/fw00-verification-index-20261013/README.md",
+      "target": "hub-reader.json"
+    },
+    {
+      "source": "docs/evidence/fw00-verification-index-20261013/README.md",
+      "target": "owner-gates.json"
+    },
+    {
+      "source": "docs/evidence/fw00-verification-index-20261013/README.md",
+      "target": "owner-gate-logs.json.gz"
+    }
+  ],
+  "checker_note": "An initial successor-check script used nonexistent payload size key and raised KeyError before producing a verdict; actual owner receipt field bytes is used in this successful replay."
+}

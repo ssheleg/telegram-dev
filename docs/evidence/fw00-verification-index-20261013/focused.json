@@ -1,0 +1,80 @@
+{
+  "source_base": "4ffb10ce1b92a599c2214327ea4d878ab514ed6b",
+  "package_version": "0.2.4",
+  "published_receipt": "docs/evidence/releases/2026-10-13-member-gates/published-readback.json",
+  "payload_files_checked": 22,
+  "all_hashes_and_sizes_match": true,
+  "npm_dry_run_exit": 0,
+  "npm_path_set_equal": true,
+  "local_links": [
+    {
+      "from": "docs/evidence/verification.md",
+      "target": "releases/2026-10-13-member-gates/README.md#published-readback"
+    },
+    {
+      "from": "docs/evidence/verification.md",
+      "target": "releases/2026-10-13-member-gates/published-readback.json"
+    },
+    {
+      "from": "docs/evidence/verification.md",
+      "target": "member-gates-20261013/README.md"
+    },
+    {
+      "from": "docs/evidence/verification.md",
+      "target": "member-gates-headers-20261013.md"
+    },
+    {
+      "from": "docs/evidence/verification.md",
+      "target": "backlog.md"
+    },
+    {
+      "from": "docs/evidence/verification.md",
+      "target": "fw00-verification-index-20261013/README.md"
+    },
+    {
+      "from": "docs/evidence/verification.md",
+      "target": "../HANDOFF.md"
+    },
+    {
+      "from": "docs/HANDOFF.md",
+      "target": "evidence/verification.md"
+    },
+    {
+      "from": "docs/HANDOFF.md",
+      "target": "evidence/fw00-verification-index-20261013/README.md"
+    },
+    {
+      "from": "docs/HANDOFF.md",
+      "target": "evidence/releases/2026-10-13-member-gates/README.md#published-readback"
+    },
+    {
+      "from": "docs/evidence/fw00-verification-index-20261013/README.md",
+      "target": "../releases/2026-10-13-member-gates/README.md"
+    },
+    {
+      "from": "docs/evidence/fw00-verification-index-20261013/README.md",
+      "target": "../member-gates-20261013/README.md"
+    },
+    {
+      "from": "docs/evidence/fw00-verification-index-20261013/README.md",
+      "target": "focused.json"
+    },
+    {
+      "from": "docs/evidence/fw00-verification-index-20261013/README.md",
+      "target": "hub-reader.json"
+    }
+  ],
+  "structural": {
+    "command": "python3 test/validate.py",
+    "exit_code": 0,
+    "stdout": "  unlooked: routed triggers \u2014 no sshlg-skills umbrella above this checkout\nOK: telegram-dev structurally valid (15 checks, 3 skills, v0.2.4)\n",
+    "stderr": ""
+  },
+  "broad_owner_gates": "QUEUED_AFTER_TP_FULL",
+  "native_provider_model": "NOT_RUN",
+  "indexed_document_sha256": {
+    "docs/evidence/verification.md": "3ec1f97833e8f18978313a37c9626b07744d814e731491883ded18d5c72973f9",
+    "docs/HANDOFF.md": "02ced5519f8340e30c84bb2cb561d11782eb0c96a2931e79847aa30f86c23664",
+    "docs/evidence/fw00-verification-index-20261013/README.md": "f428af816af5c68f215b51e04469e24624584b49fb48a3263b15f2a1d04a05ec"
+  }
+}
