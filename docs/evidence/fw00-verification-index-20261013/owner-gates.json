@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "source": "5d5ecbf4693bcb8c1fd279bb34d3e726127ecbcf",
+  "commands": [
+    {
+      "argv": [
+        "npm",
+        "test"
+      ],
+      "started_utc": "2026-10-13T11:36:12.134447+00:00",
+      "log": "/tmp/fw00-telegram-dev-gate-0.log",
+      "owned_scratch": "/tmp/fresh-fw00-telegram-dev-3fec499e7e8f49a282d3335bbcfbc717",
+      "admitted_free_bytes": 504946688,
+      "owned_pid": 13565,
+      "exit_code": 0,
+      "disk_stopped": false,
+      "timed_out": false,
+      "minimum_free_bytes": 504922112,
+      "elapsed_seconds": 3.025,
+      "log_sha256": "455d56dfdf89ce1437b26f0751947869878218f1def847b6f29ab00a4d6e1862",
+      "source_unchanged": true,
+      "worktree_clean": true,
+      "scratch_entries": [
+        "node-compile-cache"
+      ],
+      "scratch_removed": true,
+      "owned_cleanup": {
+        "proof": "Fresh empty UUID directory created and recorded before this exact child process; terminal PASS; only node-compile-cache descendants remained; all same uid, no symlinks.",
+        "files": 95,
+        "bytes": 308780
+      }
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "test:negatives"
+      ],
+      "started_utc": "2026-10-13T11:36:15.187481+00:00",
+      "log": "/tmp/fw00-telegram-dev-gate-1.log",
+      "owned_scratch": "/tmp/fresh-fw00-telegram-dev-4a2600f13ba442f89223a7cfa7dd68f2",
+      "admitted_free_bytes": 623054848,
+      "owned_pid": 14093,
+      "exit_code": 0,
+      "disk_stopped": false,
+      "timed_out": false,
+      "minimum_free_bytes": 620437504,
+      "elapsed_seconds": 7.05,
+      "log_sha256": "8f0dcd578b43e308c2b28c8b17b76161f5493c4491a8df6ae7b8b81773ca97c0",
+      "source_unchanged": true,
+      "worktree_clean": true,
+      "scratch_entries": [
+        "node-compile-cache"
+      ],
+      "scratch_removed": true,
+      "owned_cleanup": {
+        "proof": "Fresh empty UUID directory created and recorded before this exact child process; terminal PASS; only node-compile-cache descendants remained; all same uid, no symlinks.",
+        "files": 93,
+        "bytes": 305524
+      }
+    }
+  ],
+  "all_exit_zero": true,
+  "source_unchanged": true,
+  "worktree_clean_at_checks": true,
+  "admission_bytes": 419430400,
+  "stop_bytes": 209715200,
+  "independent_peer": "https://github.com/ssheleg/sshlg-skills/blob/a155725e46a0f11ddc4073fb9e337916c0194181/docs/evidence/completion-1013/fw00-navigation-peer.json",
+  "logs": "owner-gate-logs.json.gz",
+  "limits": "Local owner gates and pointer navigation only. No native/model acceptance, version change, publication or installed update. Later receipt-only successor still needs final structural/link/package checks and genuine candidate CI."
+}

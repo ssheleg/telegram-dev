@@ -76,3 +76,25 @@ The owner's broader commands from CLAUDE.md/CONTRIBUTING.md are **not rerun** in
 this focused slice; their admission is queued after the coordinator's Task
 Pipeline full run. Historical complete results remain bound to their own source.
 Next: independent audit of the frozen docs and parity receipt before integration.
+
+## Subsequent owner gates and independent acceptance
+
+The initial focused snapshot above remains historical. After the coordinator
+released the serial slot, the complete locally required command set ran at
+`5d5ecbf4693bcb8c1fd279bb34d3e726127ecbcf` with owned scratch and a disk guard
+(admit 400 MiB, stop below 200 MiB). [Process receipts](owner-gates.json)
+and [exact command outputs](owner-gate-logs.json.gz) preserve each actual exit,
+source identity, digest and disclosure. No disk stop occurred.
+
+- `npm test`: exit 0.
+- `npm run test:negatives`: exit 0.
+
+The [independent navigation/payload peer](https://github.com/ssheleg/sshlg-skills/blob/a155725e46a0f11ddc4073fb9e337916c0194181/docs/evidence/completion-1013/fw00-navigation-peer.json)
+accepted the initial three-owner index slice. It verified all 81 published files,
+three npm path sets, 42 links and the actual hub reader; those family-wide counts
+are not per-owner totals. This successor adds gate evidence and updates the current
+handoff only. No payload or test implementation changed.
+
+Next: freeze the evidence-only successor, verify its structural/link/package
+conservation, then use one explicit ready-for-review candidate and genuine required
+checks before normal integration. No version, tag or package release is needed.

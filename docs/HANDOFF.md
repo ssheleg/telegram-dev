@@ -8,7 +8,9 @@ Completed in the earlier source/publication wave: the [release packet](evidence/
 records the original tag, successful run and package readback. This navigation
 change does not rerun those historical events or assert installed/native quality.
 
-Exact next task: independently audit this frozen index and package preservation;
-queue the owner's required broader checks after the coordinator's active Task
-Pipeline full gate. Then use ordinary candidate CI and integration. No new
+Exact next task: integrate the frozen docs-only candidate through genuine required
+checks and normal merge. Independent navigation/payload review and the owner's
+local command set passed; the [subsequent gate receipt](evidence/fw00-verification-index-20261013/owner-gates.json)
+preserves their exact sources. A successor containing only these receipts receives
+final structural, link and package-conservation checks before promotion. No new
 version, tag, publication, provider call or host-profile update belongs here.
