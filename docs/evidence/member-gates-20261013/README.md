@@ -36,8 +36,35 @@ local advisory arbitration, not enforced or cross-machine protection. Fabric
 whoami identifies the hub project, but no com.status/list/submit tools are exposed;
 the cross-project board cannot be used through this connector.
 
-Next: add the negative plants and run them against the unchanged validator;
-then implement the common helper, rerun targeted checks, obtain independent
-review and push a handoff branch. Whole member gates wait until the parent hub
-aggregate finishes. Do not call a planted failure or source pass a native/runtime
-or release acceptance result.
+Next: independent review of the frozen implementation, then commit/push and
+propagate the same helper to the two siblings from their canonical main heads.
+Do not call a planted failure or source pass a native/runtime or release
+acceptance result. Release/installation and hub pin updates remain out of scope.
+
+## Observed verification
+
+- Initial real-validator plants: 12 hostile defects survived the unchanged
+  validator, exit 1 for the test harness; three valid controls passed.
+- Expanded replay with `git show 3f9d1d1:test/validate.py` in an owned temporary
+  checkout: 18 process controls, 15 failures (every hostile defect survived).
+- Final `python3 test/member_gates_test.py`: 19 process controls, 0 failures,
+  exit 0. Sixteen hostile plants and three valid controls exercise the real
+  validator, not a stand-in parser. The final additional plant came from a
+  self-review counterexample: moving `fetch-depth` from checkout `with` to `env`
+  was accepted; the corrected gate scopes the value to checkout options.
+- `npm test`: exit 0, including structural validator, Telegram fixtures,
+  installer (11 created/removed scratch homes) and audit regressions.
+- `npm run test:negatives`: exit 0, original 15 plants plus the then-current
+  18 member controls. After the isolated checkout-options correction, the
+  complete member-controls script was rerun with all 19 passing; unchanged
+  Telegram fixture suites were not duplicated.
+- `claude plugin validate . --strict` and
+  `claude plugin validate plugins/telegram-dev --strict`: both exit 0.
+- `git diff --check` and Python compilation: exit 0.
+
+The member validator discloses routed-trigger checking as unlooked because this
+isolated worktree has no umbrella ancestor. Hosted CI, release, real Telegram
+credentials/provider execution and installed/native model behavior were NOT_RUN.
+Owner workflow triggers are unchanged; branch commits use `[skip ci]` while the
+coordinator reconciles the repository's older all-push/PR workflow with the
+operator's nightly-check policy. No full hosted suite was manually dispatched.
