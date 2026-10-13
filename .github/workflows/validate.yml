@@ -1,6 +1,10 @@
 name: validate
 
 on:
+  # One explicit frozen candidate: draft -> ready after local gates and review.
+  # No opened/synchronize/reopened event and no per-push full suite.
+  pull_request:
+    types: [ready_for_review]
   # Full checks run nightly; an urgent, explicit candidate gets one recorded run.
   schedule:
     - cron: '0 23 * * *'

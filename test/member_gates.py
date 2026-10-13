@@ -5,6 +5,7 @@ not arbitrary YAML or shell semantics. Unknown workflow layouts fail closed.
 """
 from pathlib import Path
 import re
+import shlex
 
 
 def cells(line):
@@ -27,8 +28,17 @@ def label(value):
 
 def board_errors(text):
     errors, seen, width, declares, count, fenced = [], {}, None, False, 0, False
+    pending = None
     for number, line in enumerate(text.splitlines(), 1):
         line = line.strip()
+        row = cells(line) if line.startswith('|') else []
+        separator = bool(row) and all(re.fullmatch(r':?-{3,}:?', c) for c in row)
+        if pending is not None:
+            if separator and len(row) == width and line.endswith('|'):
+                pending = None
+                continue
+            errors.append(f'{pending}: board header needs an immediate matching separator')
+            pending = None
         if line.startswith(('```', '~~~')):
             fenced = not fenced
             width = None
@@ -38,14 +48,17 @@ def board_errors(text):
         if not line.startswith('|'):
             width = None
             continue
-        row = cells(line)
         first = label(row[0]) if row else ''
-        if first.lower() in ('id', 'row'):
-            width, declares = len(row), first.lower() == 'id'
+        if first.lower() == 'row':
+            errors.append(f'{number}: board Row header unsupported; use ID for declarations')
+            width = None
             continue
-        if row and all(re.fullmatch(r':?-+:?', c) for c in row):
-            if width is not None and len(row) != width:
-                errors.append(f'{number}: board row width: separator differs from header')
+        if first.lower() == 'id':
+            width, declares, pending = len(row), True, number
+            continue
+        if separator:
+            if width is not None:
+                errors.append(f'{number}: board misplaced separator')
             continue
         identifier = re.fullmatch(r'[A-Z]{1,4}-\d+[a-z]?', first)
         if width is None:
@@ -62,6 +75,8 @@ def board_errors(text):
             if first in seen:
                 errors.append(f'{number}: board duplicate ID {first}; first at {seen[first]}')
             seen[first] = number
+    if pending is not None:
+        errors.append(f'{pending}: board header needs an immediate matching separator')
     if not count:
         errors.append('board has no declared rows')
     return errors
@@ -75,10 +90,20 @@ def release_errors(text):
     """
     errors = []
     active = '\n'.join(line for line in text.splitlines() if not line.lstrip().startswith('#'))
+    if re.search(r'^\s*(?:-\s*)?<<\s*:', active, re.M):
+        return ['release ancestry guard merge keys require explicit review']
+    if re.search(r'^\s*(?:-\s*)?[\'"][^\'"\n]+[\'"]\s*:', active, re.M):
+        return ['release ancestry guard quoted mapping keys require explicit review']
+    if len(re.findall(r'^jobs:', active, re.M)) != 1 or len(re.findall(r'^  release:', active, re.M)) != 1:
+        return ['release ancestry guard job is missing or ambiguous']
+    if re.search(r'^(?:defaults:|    defaults:)', active, re.M):
+        return ['release ancestry guard defaults require explicit review']
     job = re.search(r'^  release:\s*\n(?P<body>.*?)(?=^  [\w-]+:|\Z)', active, re.M | re.S)
     if not job:
         return ['release job missing or unsupported layout']
     body = job.group('body')
+    if len(re.findall(r'^    steps:', body, re.M)) != 1:
+        return ['release ancestry guard steps are missing or ambiguous']
     if re.search(r'^    continue-on-error:\s*(?!false\s*(?:#.*)?$)\S', body, re.M):
         errors.append('release ancestry failure ignored at job scope')
     steps = re.split(r'(?=^      - )', body, flags=re.M)[1:]
@@ -86,9 +111,13 @@ def release_errors(text):
     for index, step in enumerate(steps):
         if re.search(r'^(?:      - |        )uses:\s*actions/checkout@', step, re.M):
             checkouts.append(index)
-            options = re.search(r'^        with:\s*\n((?:          [^\n]*\n?|\n)*)', step, re.M)
-            if (not re.search(r'^(?:      - |        )(?:if|continue-on-error):', step, re.M)
-                and options and re.search(r'^          fetch-depth:\s*[\'"]?0[\'"]?\s*(?:#.*)?$', options.group(1), re.M)):
+            options = re.findall(r'^        with:\s*\n((?:          [^\n]*\n?|\n)*)', step, re.M)
+            depth = re.findall(r'^          fetch-depth:\s*(.*?)\s*(?:#.*)?$', options[0], re.M) if len(options) == 1 else []
+            uses = re.findall(r'^(?:      - |        )uses:', step, re.M)
+            if (len(uses) == 1 and len(re.findall(r'^        with:', step, re.M)) == 1
+                and not re.search(r'^(?:      - |        )if:', step, re.M)
+                and not re.search(r'^(?:      - |        )continue-on-error:\s*(?!false\s*(?:#.*)?$)\S', step, re.M)
+                and len(depth) == 1 and depth[0].strip('\'"') == '0'):
                 full.append(index)
         run = re.search(r'^        run:\s*\|[-+]?\s*\n((?:          [^\n]*\n?|\n)*)', step, re.M)
         if not run:
@@ -98,6 +127,27 @@ def release_errors(text):
         if not guard:
             continue
         guards.append(index)
+        # This is the supported shell setup, not a substring hunt through arbitrary
+        # programs. Unknown setup/control flow must be reviewed with new fixtures.
+        prefix = [line.strip() for line in shell[:guard.start()].splitlines() if line.strip()]
+        expected = ['set -eu', 'DEF="$(gh api "repos/$GITHUB_REPOSITORY" --jq .default_branch)"',
+                    'git fetch --no-tags origin "$DEF"']
+        if prefix != expected or len(re.findall(r'^(?:      - |        )run:', step, re.M)) != 1:
+            errors.append('release ancestry guard has unsupported setup or duplicate run')
+        commands = [line.strip() for line in guard.group('failure').replace('\\\n', '').splitlines() if line.strip()]
+        try:
+            refusal = shlex.split(commands[-1], comments=True) == ['exit', '1']
+            for command in commands[:-1]:
+                tokens = list(shlex.shlex(command, posix=True, punctuation_chars=';&|'))
+                if not tokens or tokens[0] != 'echo' or any(t and set(t) <= set(';&|') for t in tokens) or '$(' in command or '`' in command:
+                    refusal = False
+        except (ValueError, IndexError):
+            refusal = False
+        if not refusal:
+            errors.append('release ancestry guard refusal has unsupported control flow')
+        shell_option = re.findall(r'^(?:      - |        )shell:\s*(.*?)\s*$', step, re.M)
+        if shell_option and shell_option != ['bash']:
+            errors.append('release ancestry guard shell requires explicit review')
         if not re.search(r'^\s+exit 1\s*(?:#.*)?$', guard.group('failure'), re.M):
             errors.append('release ancestry guard has no refusing exit')
         if re.search(r'^(?:      - |        )if:', step, re.M):
