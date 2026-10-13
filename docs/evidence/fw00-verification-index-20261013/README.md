@@ -1,6 +1,6 @@
 # FW00: navigable verification evidence
 
-Status: source-first packet; focused validation pending.
+Status: FOCUSED PASS; independent audit and required broader owner gates pending.
 
 ## Objective and source contract
 
@@ -53,3 +53,26 @@ No mutable installed-profile or human verification claim is introduced.
 
 Skills: task-pipeline (delivery), evidence-docs (source limits), agent-sync
 (local advisory lease), make-skill (package preservation).
+
+## Focused observations
+
+[Current local receipt](focused.json) records the actual structural command,
+output and exit 0, local link resolution and package parity. All 22
+files from the existing published receipt match both SHA256 and size; the npm
+`pack --dry-run --json --ignore-scripts` path set is identical. No tarball was
+published or downloaded during this change. The owner structural disclosure for
+an absent enclosing umbrella remains separate from native/model acceptance.
+
+[Hub reader replay](hub-reader.json) records four cases using the actual extracted
+hub function: absent entry discloses the baseline gap; the new current heading
+is accepted; no version is disclosed; a stale heading triggers the existing lag
+ratchet. Owned fixture directories were removed. These controls prove only the
+reader's existing navigation contract, not the truth of historical outcomes.
+
+All existing files, including prior receipts, are preserved byte-for-byte. The
+new files are this packet and its check receipts, verification.md and HANDOFF.md.
+No package version, installer, plugin, skill, validator or workflow changed.
+The owner's broader commands from CLAUDE.md/CONTRIBUTING.md are **not rerun** in
+this focused slice; their admission is queued after the coordinator's Task
+Pipeline full run. Historical complete results remain bound to their own source.
+Next: independent audit of the frozen docs and parity receipt before integration.

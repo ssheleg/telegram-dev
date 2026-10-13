@@ -1,0 +1,44 @@
+{
+  "hub_source": "0016e058c86b3a39d0df1e06097b6c96de496c58",
+  "reader_source_sha256": "502581d30eab5b80666970e41e47191c0dbd92639ed080ef568e1a0cfb5d5f41",
+  "method": "Execute exact extracted hub function against owned temporary package/ledger fixtures; only navigation/version contract, not result quality.",
+  "cases": [
+    {
+      "case": "absent baseline",
+      "result": {
+        "disclosures": [
+          "member: no verification ledger"
+        ],
+        "errors": []
+      }
+    },
+    {
+      "case": "current",
+      "result": {
+        "disclosures": [],
+        "errors": []
+      }
+    },
+    {
+      "case": "versionless",
+      "result": {
+        "disclosures": [
+          "member: the verification ledger records no version at all, so nothing says which artifact its rows were confirmed against"
+        ],
+        "errors": []
+      }
+    },
+    {
+      "case": "stale",
+      "result": {
+        "disclosures": [
+          "member: the verification ledger's newest record is 0.0.0 and package.json ships 0.2.4 \u2014 its rows describe an artifact that is no longer the shipped one"
+        ],
+        "errors": [
+          "1 member ledger(s) describe a version older than they ship (member) and the ratchet in test/validate.py stands at 0. A member's ledger is fixed in that member's own release; this figure is lowered when one catches up and is never raised to match a regression"
+        ]
+      }
+    }
+  ],
+  "owned_temporary_removed": true
+}
