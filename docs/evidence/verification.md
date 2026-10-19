@@ -1,5 +1,11 @@
 # Verification evidence — telegram-dev
 
+## v0.3.0: content sources (2026-10-19)
+
+| Evidence needed | Owning source | Scope and limits |
+|---|---|---|
+| Every added claim and its primary source; leads left out | [Feed packet](feed-1019/README.md) | Sources fetched on 2026-10-19. No model-quality or live-account test is claimed. |
+
 ## v0.2.4 — published-source evidence index (2026-10-13)
 
 This index makes existing owner evidence discoverable. It does not re-run or

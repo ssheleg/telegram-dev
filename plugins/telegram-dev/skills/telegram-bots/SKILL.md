@@ -32,7 +32,11 @@ at user 31 and silently stops.
 
 *Read against the Bot API on 2026-08-25, at version **10.3** (released
 2026-08-24). Re-check `core.telegram.org/bots/api-changelog` before quoting a
-version: this API ships roughly monthly.*
+version: this API ships roughly monthly. Re-checked 2026-10-19: 10.3 is still
+the latest. For a machine to read, Telegram serves the docs as Markdown at the
+same path plus `.md`: `core.telegram.org/bots/api.md`, one file per method
+(`/bots/api/methods/getupdates.md`) and a types index (`/bots/api/types.md`).
+That is official and parseable, but it is Markdown, not a JSON schema.*
 
 Deep material, loaded on demand:
 
@@ -203,6 +207,13 @@ Full flow, subscriptions and the transaction ledger:
 
 Telegram is not a database and offers no way to enumerate the people who have
 started your bot. If you did not write it down when it happened, it is gone.
+
+**A second channel, when the audience can lose Telegram.** A bot is a channel
+you do not own. If your users live where access to Telegram is restricted, or
+could become so, plan for the day it stops reaching them: key users on your own
+id rather than on `chat_id` alone, ask for a second contact (email, a web
+account) at a moment it is useful to the user, and keep the product reachable
+outside Telegram. A block then costs a channel, not the user list.
 
 ## Before you ship
 
