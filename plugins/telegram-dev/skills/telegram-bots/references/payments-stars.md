@@ -65,6 +65,23 @@ Recurring means `successful_payment` arrives again on each renewal, with the sam
 `invoice_payload` and a new charge id. Grant per **charge id**, never per payload
 — keying on the payload grants the first renewal and silently drops the rest.
 
+## Gift trades: the native offer, not an accept button
+
+*Read from `telegram.org/blog/passkeys-and-gift-offers` (2025-12-12) and the
+Bot API changelog on 2026-10-19.*
+
+Telegram has a native purchase offer for collectible gifts: the buyer offers
+Stars or TON with a price and a time limit, **the payment is reserved for the
+offer's duration** and refunded in full if it is rejected or expires, the owner
+sees how close the amount is to the gift's estimated value, and confirming the
+sale transfers the gift. Since Bot API 9.3, `UniqueGiftInfo.origin` is
+`"offer"` for a gift bought this way.
+
+A bot or Mini App that brokers gift sales routes them through that offer. Never
+build, or tell users to trust, a flow where the seller's "accept" is itself the
+transfer and the buyer's money was never reserved: that is a gift sent for
+nothing.
+
 ## What not to trust
 
 - **Not the `openInvoice` callback in a Mini App.** It runs on the user's device

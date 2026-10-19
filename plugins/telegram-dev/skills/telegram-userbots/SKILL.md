@@ -85,6 +85,13 @@ client = TelegramClient(
   same weight, but they are still not public.
 - **Losing a session is recoverable; leaking one is an incident.** Revoke from
   the account's own *Devices* screen, which ends that session everywhere.
+- **Log Out is not a lockout, and termination comes from an older session.**
+  `auth.logOut` can return a `future_auth_token` that skips the next login code,
+  so the two-step password is the real gate; a session under 24 hours old cannot
+  terminate others (`FRESH_RESET_AUTHORISATION_FORBIDDEN`). Accepting a
+  `tg://login?token=` link logs in whoever generated it. List, watch
+  (`UpdateNewAuthorization`) and terminate sessions:
+  [`references/sessions-and-auth.md`](references/sessions-and-auth.md#what-logging-out-ends-and-the-session-that-is-not-yours).
 - Verified on this machine on 2026-08-25: five of five Telethon projects
   gitignore the session and **none has one tracked in git** — the one trap this
   estate has actually closed. Keep it closed.
@@ -174,3 +181,6 @@ serve.
    the minor*).
 5. **A dead session pages a human** rather than restarting forever (§ *Two
    accounts, two lifetimes*).
+6. **The account has a two-step password, and someone watches its sessions**:
+   a new `UpdateNewAuthorization` reaches a human, and the oldest trusted
+   session is the one that terminates (§ *The session file is the credential*).

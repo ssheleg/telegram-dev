@@ -169,6 +169,43 @@ Themes come from `themeParams` and `colorScheme` and change under the user, not
 under you — bind to them rather than hardcoding a palette.
 [`references/viewport-and-platform.md`](references/viewport-and-platform.md).
 
+## The host sits above your page, and so does the device
+
+*Papers and docs below read on 2026-10-19.*
+
+**Threat model: the Telegram client is trusted, because nothing in the page can
+refuse it.** Priyanka et al., *Don't Trust the Super-App: A Case Study of
+Russia's Max* (arXiv:2609.11814, 2026-09-10), show on the MAX super-app that a
+host can capture a mini-app's UI, read and write its local storage, inject
+arbitrary JavaScript into its runtime, mediate its network traffic and control
+its authentication context in ways that enable silent impersonation; the
+authors argue these capabilities come from the privileges any super-app holds
+by design. The study is of MAX, not Telegram; take it as the shape of the
+boundary. Signed `initData` proves what the client vouched for, not that the
+client is honest, so write that assumption into the threat model, keep secrets
+and decisions on the server, and keep what the page holds short-lived.
+
+**Secrets on the device go to `SecureStorage`, never to storage that is
+readable.** Ciccotelli, Zappone and Di Pietro, *TENET: Telegram Mini App
+(in)security* (arXiv:2608.17538), analysed 37 Mini Apps: 30 had flaws in three
+tiers (plaintext storage, recoverable encryption, replayable tokens), with
+session tokens and wallet mnemonics among what was stored. Since Bot API 9.0,
+`Telegram.WebApp.SecureStorage` uses the iOS Keychain and the Android Keystore,
+encrypted at rest, up to 10 items per user per bot; `DeviceStorage` is the
+`localStorage` analogue (5 MB per user per bot) and is not for secrets. Your
+short-lived session token belongs in the first, a mnemonic belongs in neither.
+
+**TON Connect 5.0 is a renumbering, but the jump from 3.0 is not.** On
+2026-10-11 `@tonconnect/ui` and `@tonconnect/ui-react` went to 5.0.0 to share
+one major line with `@tonconnect/sdk`; the code equals ui 3.1.0 (5.0.1 is a
+visual patch). 3.1.0 changed what error handlers see: UI error classes report
+their class name in `error.name` (it used to be `"Error"`), and a known wallet
+rejection reaches the app as a typed SDK error such as `UserRejectsError`
+instead of `TonConnectUIError: Unhandled error`. Mini App detection
+(`isInTMA`, `getTmaPlatform` and others) moved into `@tonconnect/sdk`, and the
+mobile modal shows Telegram and Gram Wallet as their own buttons. Match on the
+typed errors before upgrading from 3.0.x.
+
 ## Getting the answer back to the bot
 
 - **`sendData(data)`** — for an app opened from a **keyboard button**. It closes
@@ -195,3 +232,6 @@ under you — bind to them rather than hardcoding a palette.
    one of the archived ones (§ *The SDK's package name moved*).
 5. **Layout reads the safe-area and viewport fields** rather than `100vh`
    (§ *The device is not your laptop*).
+6. **The threat model names the host as trusted**, and any secret the page
+   keeps is in `SecureStorage`, not `localStorage` or `DeviceStorage`
+   (§ *The host sits above your page*).

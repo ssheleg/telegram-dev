@@ -1,3 +1,37 @@
+## v0.3.0 (2026-10-19): sessions, host trust and gift offers, each from a primary source
+
+Every sentence added below was checked on 2026-10-19 against a primary source
+fetched that day; the source list and the candidate claims left out (no primary
+source) are in [the packet](docs/evidence/feed-1019/README.md). The Bot API pin
+stays at 10.3: the changelog still lists it as the latest release.
+
+- **`telegram-userbots`: what logging out ends.** `auth.logOut` may return a
+  `future_auth_token` that skips the next login code, so the two-step password
+  is the real gate. Sessions are listed with `account.getAuthorizations` and
+  terminated with `account.resetAuthorization` / `auth.resetAuthorizations`,
+  which refuse from a session under 24 hours old. A new login reaches the other
+  sessions as `updateNewAuthorization` and confirms itself after
+  `authorization_autoconfirm_period`. `tg://login?token=` logs in whoever
+  generated the token; `t.me/login/<code>` carries the code. `+888` numbers get
+  their code on Fragment, behind the wallet. Telethon 1.44.0 class names given.
+  The checklist gains a sixth item.
+- **`telegram-miniapps`: the host and the device.** A threat-model line from
+  *Don't Trust the Super-App* (arXiv:2609.11814): a super-app host can capture
+  a mini-app's UI, read its storage and inject script, so the client is trusted
+  by construction. Secrets go to `SecureStorage` (Keychain or Keystore, 10
+  items), not `DeviceStorage` or `localStorage`, with the TENET storage findings
+  (arXiv:2608.17538). TON Connect 5.0 is a renumbering of ui 3.1.0, whose typed
+  errors and `error.name` change break handlers written for 3.0.x. The
+  checklist gains a sixth item.
+- **`telegram-bots`: the official Markdown docs and a second channel.**
+  `core.telegram.org/bots/api.md` and per-method `.md` files are the official
+  machine-readable form (Markdown, not a JSON schema). A practice note on
+  keeping a second channel when the audience can lose access to Telegram.
+  `payments-stars.md` gains the native gift purchase offer (payment reserved,
+  `UniqueGiftInfo.origin = "offer"` since Bot API 9.3) and the accept-is-a-send
+  trap it replaces.
+- Descriptions, routing triggers, fixtures and the installer are unchanged.
+
 ## v0.2.4 — 2026-10-13
 
 - Validate the owner board's table shape, unique task IDs and immediate Markdown

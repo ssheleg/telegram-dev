@@ -1,4 +1,19 @@
-# telegram-dev: evidence navigation handoff
+# telegram-dev: handoff
+
+## 2026-10-19: v0.3.0, primary-sourced feed content (FEED-SEO-1019 wave 6)
+
+Objective: add verified content on user sessions, Mini App host trust and
+storage, TON Connect 5.0, the official Markdown Bot API docs, gift offers and a
+second-channel practice. Sources and left-out leads:
+[feed packet](evidence/feed-1019/README.md). Open work: board rows FEED-01 to
+FEED-03 (each waits on a primary source). Checks: `npm test` and
+`npm run test:negatives` on the branch and on the merge commit; release receipts
+are the tag's release run and the npm readback named in the PR.
+
+Exact next task: when a primary source appears for a FEED row, add it in its
+own change; otherwise re-check the Bot API changelog at the next release.
+
+## Earlier: evidence navigation
 
 The [verification index](evidence/verification.md) routes to existing evidence for
 published version 0.2.4. The [FW00 packet](evidence/fw00-verification-index-20261013/README.md)
