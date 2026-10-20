@@ -1,5 +1,16 @@
 # telegram-dev: handoff
 
+## 2026-10-20: v0.4.0, short router descriptions
+
+Objective: free Claude Code's shared skill-listing budget (about 30,000 chars; 81 of
+134 skills showed no description on 2026-10-20). The three descriptions are now
+419-461 chars (2,671 to 1,322 in total); removed trigger phrases moved verbatim into
+each body's `## Triggers`. `test/validate.py` caps a description at 500 chars. Checks:
+`npm test` and `npm run test:negatives` exit 0. Open: the umbrella's advertised-trigger
+check still reads descriptions only and reports 8 body-only triggers until its
+context-diet change lands; the umbrella re-pin is the umbrella's task. Exact next
+task: none in this repository for this change.
+
 ## 2026-10-19: v0.3.0, primary-sourced feed content (FEED-SEO-1019 wave 6)
 
 Objective: add verified content on user sessions, Mini App host trust and
