@@ -28,7 +28,11 @@ PLUGIN_DIR = ROOT / "plugins" / PLUGIN
 SKILL_ROOT = PLUGIN_DIR / "skills"
 
 # The Agent Skills spec caps, and the house limits that leave room for the next edit.
-DESC_MAX, DESC_HOUSE = 1024, 970
+# DESC_HOUSE is the family cap (make-skill doctrine, 2026-10-20): target 400, ceiling 500.
+# Claude Code shares about 30,000 chars of skill listing across every installed skill;
+# measured 2026-10-20, the operator's listing was full and 81 of 134 skills showed no
+# description. Plugin skills cannot be hidden, so description length is the only lever.
+DESC_MAX, DESC_HOUSE = 1024, 500
 BODY_MAX_TOKENS, BODY_HOUSE_TOKENS, BODY_MAX_LINES = 5000, 4750, 500
 CHARS_PER_TOKEN = 3.9
 RESERVED = ("anthropic", "claude")      # rejected by the Skills API on upload
@@ -231,7 +235,8 @@ def check_skill_front_matter():
             fail(f"{name}/SKILL.md: description is {len(desc)} chars, the cap is {DESC_MAX}")
         elif len(desc) > DESC_HOUSE:
             fail(f"{name}/SKILL.md: description is {len(desc)} chars, past the {DESC_HOUSE} "
-                 "house limit — a near-miss neighbour needs room for a NOT-for clause")
+                 "family cap: the host's skill listing is shared by every installed skill; "
+                 "keep the router sentence and move trigger phrases to the body's ## Triggers")
         if not desc.startswith("Use when"):
             fail(f"{name}/SKILL.md: description does not open with 'Use when' (house rule)")
         if "Triggers" not in desc:

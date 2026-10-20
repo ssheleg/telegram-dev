@@ -1,18 +1,12 @@
 ---
 name: telegram-miniapps
 description: >-
-  Use when building or auditing a Telegram Mini App — a web page opened inside
-  Telegram — where the whole security model is one signed blob. Covers verifying
-  initData on the server with HMAC-SHA256 and the "WebAppData" key derivation,
-  why initDataUnsafe is named that, the auth_date freshness window, the Ed25519
-  signature path for a third party with no bot token, session exchange, sending
-  results back to the bot with sendData and answerWebAppQuery, Stars payments
-  inside the app, the viewport and safe-area fields a real device needs, and the
-  SDK package whose name moved. Triggers - "mini app", "miniapp", "telegram web
-  app", "initData", "initDataUnsafe", "WebAppData", "tma.js",
-  "@telegram-apps/sdk", "мини-апп", "телеграм веб-апп", "валидация initData".
-  Not for the bot behind it (telegram-bots) or user accounts
-  (telegram-userbots).
+  Use when building or auditing a Telegram Mini App, a web page opened inside Telegram:
+  server-side initData verification, session exchange, sendData and Stars payments inside
+  the app, viewport and safe areas. Not for the bot behind it (telegram-bots) or user
+  accounts (telegram-userbots). Opt out: no telegram, без телеграма. Triggers - "mini app",
+  "initData", "initDataUnsafe", "telegram web app", "tma.js", "мини-апп", "телеграм
+  веб-апп", "валидация initData".
 license: MIT
 compatibility: Fixtures run with python3 (standard library only)
 ---
@@ -235,3 +229,7 @@ typed errors before upgrading from 3.0.x.
 6. **The threat model names the host as trusted**, and any secret the page
    keeps is in `SecureStorage`, not `localStorage` or `DeviceStorage`
    (§ *The host sits above your page*).
+
+## Triggers
+
+More phrases that route here: "miniapp", "WebAppData", "@telegram-apps/sdk".

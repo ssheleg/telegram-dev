@@ -1,20 +1,11 @@
 ---
 name: telegram-bots
 description: >-
-  Use when building, adding or auditing a Telegram bot (Telegram-бот,
-  Telegram-бота, телеграм-бота) on the official HTTP Bot API: receiving
-  updates by polling or webhook, deduplicating them, keyboards and
-  inline mode, Telegram Stars payments, files, rate limits, and the seam where
-  an update becomes a row in your own database. Covers the pinned API version,
-  update_id as the only idempotency key, the allowed_updates default that drops
-  three update types in silence, the webhook secret header, the ten-second
-  pre-checkout window, XTR and refunds, the 20MB download ceiling, and what a
-  bot cannot do at all. Triggers - "telegram bot", "bot api", "aiogram",
-  "grammy", "telegraf", "python-telegram-bot", "setWebhook", "getUpdates",
-  "telegram stars", "pre_checkout_query", "телеграм бот", "бот апи", "вебхук
-  телеграм", "звёзды телеграм". Not for user accounts or reading history a bot
-  cannot see (telegram-userbots), and not for the web layer
-  (telegram-miniapps).
+  Use when building, adding or auditing a Telegram bot on the HTTP Bot API: polling or
+  webhooks, update dedup, keyboards, Telegram Stars payments, files and rate limits. Not for
+  user accounts (telegram-userbots) or the web layer (telegram-miniapps). Opt out: no
+  telegram, без телеграма. Triggers - "telegram bot", "bot api", "aiogram", "setWebhook",
+  "telegram stars", "телеграм бот", "вебхук телеграм", "звёзды телеграм".
 license: MIT
 compatibility: Fixtures run with python3 (standard library only)
 ---
@@ -225,3 +216,8 @@ outside Telegram. A block then costs a channel, not the user list.
 4. **429 sleeps for `retry_after`**, and a broadcast can resume (§ *Limits*).
 5. **Goods are delivered on `successful_payment`**, not on pre-checkout
    (§ *Money*).
+
+## Triggers
+
+More phrases that route here: "grammy", "telegraf", "python-telegram-bot", "getUpdates",
+"pre_checkout_query", "бот апи", "Telegram-бот", "Telegram-бота", "телеграм-бота".

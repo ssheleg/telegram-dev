@@ -1,18 +1,12 @@
 ---
 name: telegram-userbots
 description: >-
-  Use when a Telegram job needs a user account rather than a bot token — reading
-  history a bot cannot see, acting as a person, exporting at scale, or
-  downloading past the Bot API ceiling — with Telethon or another MTProto
-  client. Covers the decision of whether a user account is needed at all, the
-  session file as a credential equal to the password, api_id and api_hash,
-  FloodWaitError as the API working rather than failing, entity resolution and
-  its cache, pinning across minor releases that move session and cache
-  behaviour, two-factor login, takeout for bulk export, and the account-ban
-  risk a bot token does not carry. Triggers - "telethon", "pyrogram", "mtproto",
-  "userbot", "user account", "read channel history", "FloodWaitError",
-  "api_hash", "юзербот", "телетон", "мтпрото", "сессия телеграм". Not for
-  ordinary bots (telegram-bots) or the web layer (telegram-miniapps).
+  Use when a Telegram job needs a user account rather than a bot token: reading history a
+  bot cannot see, acting as a person, bulk export with Telethon or another MTProto client,
+  and the ban risk that comes with it. Not for ordinary bots (telegram-bots) or the web
+  layer (telegram-miniapps). Opt out: no telegram, без телеграма. Triggers - "telethon",
+  "pyrogram", "mtproto", "userbot", "FloodWaitError", "юзербот", "мтпрото", "сессия
+  телеграм".
 license: MIT
 ---
 
@@ -184,3 +178,7 @@ serve.
 6. **The account has a two-step password, and someone watches its sessions**:
    a new `UpdateNewAuthorization` reaches a human, and the oldest trusted
    session is the one that terminates (§ *The session file is the credential*).
+
+## Triggers
+
+More phrases that route here: "user account", "read channel history", "api_hash", "телетон".

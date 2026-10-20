@@ -1,3 +1,21 @@
+## v0.4.0 (2026-10-20): short router descriptions
+
+- Every skill's front-matter `description` is now a router, not a manual: one
+  "Use when" sentence, a "Not for" boundary naming the sibling skill, the opt-out
+  phrase (no telegram, без телеграма) and 8 English and Russian triggers.
+  Lengths before and after: telegram-bots 958 to 419, telegram-userbots 876 to 442,
+  telegram-miniapps 837 to 461 (2,671 to 1,322 chars in total).
+- Why: Claude Code shares about 30,000 chars of skill listing across every installed
+  skill. Measured on 2026-10-20, the operator's listing held 29,995 chars for 134 skills
+  and 81 of them showed no description. Plugin skills cannot be hidden, so description
+  length is the only lever.
+- Every trigger phrase removed from a description moved verbatim into a new
+  `## Triggers` section at the end of that skill's body, so the family's routing hook
+  still finds each of its words in the skill's text.
+- `test/validate.py`: the house description limit drops from 970 to the family cap of
+  500 chars (the standard's 1024 stays the hard limit); the padding plant derives its
+  length from the cap and still lands between the two.
+
 ## v0.3.0 (2026-10-19): sessions, host trust and gift offers, each from a primary source
 
 Every sentence added below was checked on 2026-10-19 against a primary source
