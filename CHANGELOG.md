@@ -1,3 +1,10 @@
+## v0.5.3 (2026-10-24): the ledger change, released
+
+- The same content as 0.5.2, released under an annotated tag. `v0.5.2` was pushed
+  as a lightweight tag, which the release workflow refuses before publishing
+  anything, and the repository rules keep tags; so `v0.5.2` names no release and
+  nothing was ever published as 0.5.2.
+
 ## v0.5.2 (2026-10-24): the verification ledger names the shipped version
 
 - `docs/evidence/verification.md` gains a section for the 0.5.1 content: the
