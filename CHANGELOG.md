@@ -1,3 +1,11 @@
+## v0.5.2 (2026-10-24): the verification ledger names the shipped version
+
+- `docs/evidence/verification.md` gains a section for the 0.5.1 content: the
+  checks that ran, the fixture's self-test, the telegraf release the reference
+  was read against, and the published artifact. The umbrella's catalogue check
+  refuses a member whose ledger names an older version than it ships, which kept
+  0.5.1 from being pinned. No skill text changed.
+
 ## v0.5.1 (2026-10-24): a bot under load
 
 - **Why 0.5.1 and not 0.5.0:** a `v0.5.0` tag was pushed by mistake on the
