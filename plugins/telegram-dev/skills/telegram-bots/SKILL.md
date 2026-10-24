@@ -37,6 +37,7 @@ Deep material, loaded on demand:
 | [`references/payments-stars.md`](references/payments-stars.md) | taking money — Stars, invoices, the pre-checkout window, refunds, subscriptions |
 | [`references/limits-and-files.md`](references/limits-and-files.md) | sending at volume, or moving files — every published limit and what to do at each |
 | [`references/frameworks.md`](references/frameworks.md) | choosing or auditing a library — aiogram, grammY, Telegraf, python-telegram-bot, and what each hides |
+| [`references/high-load.md`](references/high-load.md) | the bot has real traffic, or it stops answering everyone when Telegram is slow — a queue per chat, a ceiling, payments outside it, shutdown, alarms |
 
 **Runnable, and shipped beside this file:**
 [`fixtures/update_delivery.py`](fixtures/update_delivery.py) — nine invariants a
@@ -47,6 +48,11 @@ dead worker, a redelivery answered "duplicate" about work that never happened, a
 reply doubled by a crash before the done mark, a redelivered outbox row sent
 twice, one charge granted twice across two updates, a reply dropped on 429, and
 one payment granted twice. Standard library only.
+[`fixtures/update_pump.py`](fixtures/update_pump.py) — nine rules that keep one
+slow handler from holding every chat (the poll does not wait for handlers,
+per-chat order, a ceiling, a payment lane, flood measured from arrival, no
+supersession at queue time, waiting callbacks answered, dedup, a per-chat cap),
+each removed in turn by `--self-test` and watched failing.
 
 ---
 
@@ -216,8 +222,10 @@ outside Telegram. A block then costs a channel, not the user list.
 4. **429 sleeps for `retry_after`**, and a broadcast can resume (§ *Limits*).
 5. **Goods are delivered on `successful_payment`**, not on pre-checkout
    (§ *Money*).
+6. **The poll does not wait for handlers**: a queue per chat, a ceiling across
+   chats, payments outside it ([`references/high-load.md`](references/high-load.md)).
 
 ## Triggers
 
 More phrases that route here: "grammy", "telegraf", "python-telegram-bot", "getUpdates",
-"pre_checkout_query", "бот апи", "Telegram-бот", "Telegram-бота", "телеграм-бота".
+"pre_checkout_query", "high load bot", "бот тормозит", "бот апи", "Telegram-бот", "Telegram-бота", "телеграм-бота".

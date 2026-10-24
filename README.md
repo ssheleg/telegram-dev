@@ -62,7 +62,7 @@ local Bot API server.
 
 ## What loads on demand
 
-**Ten reference files** ship beside the three skills. Each `SKILL.md` stays
+**Eleven reference files** ship beside the three skills. Each `SKILL.md` stays
 inside its token budget and pulls these in only when the work reaches them —
 this table is what actually arrives in your repository, and the validator
 compares it to the tree both ways:
@@ -73,6 +73,7 @@ compares it to the tree both ways:
 | `telegram-bots` | `references/payments-stars.md` | the bot sells anything — Stars, the ten-second pre-checkout window, refunds |
 | `telegram-bots` | `references/limits-and-files.md` | sending at volume, broadcasting, or moving anything larger than a photo |
 | `telegram-bots` | `references/frameworks.md` | choosing a library, or auditing one somebody else chose |
+| `telegram-bots` | `references/high-load.md` | the bot has real traffic, or one slow update stops it answering everyone |
 | `telegram-miniapps` | `references/initdata-verification.md` | implementing or reviewing `initData` verification — both algorithms, every known wrong turn |
 | `telegram-miniapps` | `references/app-to-bot.md` | the app has to return a result, open an inline result, or take money |
 | `telegram-miniapps` | `references/viewport-and-platform.md` | the app looks wrong on a real device — safe areas, the jumping viewport |
@@ -85,6 +86,7 @@ compares it to the tree both ways:
 ```bash
 python3 plugins/telegram-dev/skills/telegram-miniapps/fixtures/verify_initdata.py
 python3 plugins/telegram-dev/skills/telegram-bots/fixtures/update_delivery.py --self-test
+python3 plugins/telegram-dev/skills/telegram-bots/fixtures/update_pump.py --self-test
 ```
 
 Standard library only, no network. The first is the `initData` verifier to copy,
@@ -121,7 +123,7 @@ These run in a clone of this repository; the published package ships `bin/` and
 `plugins/` only.
 
 ```bash
-npm test              # the validator, then both fixtures including the mutant matrix
+npm test              # the validator, then every fixture including the mutant matrices
 npm run test:negatives # plant each defect and require the validator to refuse it
 ```
 
