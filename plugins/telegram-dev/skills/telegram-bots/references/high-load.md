@@ -11,6 +11,8 @@ logged as an error until the sends start timing out.
 The rules are library-independent; the Telegraf lines are the measured example.
 Every rule below has a mutant in [`fixtures/update_pump.py`](../fixtures/update_pump.py).*
 
+## Contents
+
 - [Check whether your poll waits for handlers](#check-whether-your-poll-waits-for-handlers)
 - [A queue per chat, a ceiling across chats](#a-queue-per-chat-a-ceiling-across-chats)
 - [Payments run outside the ceiling](#payments-run-outside-the-ceiling)
