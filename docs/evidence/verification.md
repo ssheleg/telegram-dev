@@ -1,5 +1,14 @@
 # Verification evidence — telegram-dev
 
+## v0.5.2: the 0.5.1 content confirmed against the shipped artifact (2026-10-24)
+
+| Evidence needed | Owning source | Scope and limits |
+|---|---|---|
+| The structure of the new reference and the routing rows | `test/validate.py` (`npm test`, `npm run test:negatives`, both exit 0 on the candidate) | Structure only. No model routing quality is claimed. |
+| The nine delivery invariants of `fixtures/update_pump.py` | `python3 plugins/telegram-dev/skills/telegram-bots/fixtures/update_pump.py --self-test` (part of `npm test`): every invariant holds with all rules on, and each goes red when its own rule is removed | A simulation on a virtual clock. It shows what each rule protects; it is not a measurement of any live bot. |
+| The telegraf behaviour `references/high-load.md` describes | telegraf 4.16.3 source read on 2026-10-23: `polling.js` awaits `Promise.all` over the batch before the next `getUpdates`; `handlerTimeout` 90 000 ms with `p-timeout`; the client sets `timeout = 500000` after its options are merged | Pinned to that release. A later telegraf may differ. |
+| The package that installs is the one described | npm `@ssheleg/telegram-dev@0.5.1` and GitHub release `v0.5.1` published by the release workflow on tag `v0.5.1` (merge commit `3683720`) | 0.5.2 changes only this ledger and the version fields. |
+
 ## v0.4.0: short router descriptions (2026-10-20)
 
 | Evidence needed | Owning source | Scope and limits |
