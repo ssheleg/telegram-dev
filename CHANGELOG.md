@@ -1,3 +1,28 @@
+## v0.5.1 (2026-10-24): a bot under load
+
+- **Why 0.5.1 and not 0.5.0:** a `v0.5.0` tag was pushed by mistake on the
+  previous `main` commit, before this change had merged. Its release run was
+  cancelled before anything was published (npm stayed at 0.4.0, no GitHub
+  release), and the repository rules keep tags, so that tag stays and names no
+  release. Nothing was ever published as 0.5.0.
+
+- **`telegram-bots`: new reference `references/high-load.md`.** One slow update
+  must not hold every chat. Telegraf 4.16.3 awaits `Promise.all` over the whole
+  batch before the next `getUpdates` and races each handler against a 90 s
+  `handlerTimeout` (read in its source on 2026-10-23), so one handler waiting on a
+  slow Telegram stops the bot for everyone. The page covers a dispatcher behind
+  `bot.handleUpdate` (a queue per chat, a ceiling across chats, a per-chat cap,
+  payments outside the ceiling), guards that must measure from arrival once work
+  is queued, why a screen must not be superseded at queue time, timeouts that
+  free the caller rather than the work, a shutdown that stops the poll first and
+  refuses to restart it, and the measurements and non-flapping alarms that show
+  the problem before a user does.
+- **New fixture `fixtures/update_pump.py`.** A discrete-event simulation on a
+  virtual clock with nine rules; `--self-test` removes each and watches its
+  invariant fail. Run by `npm test`.
+- Lessons come from the verification rounds of a production bot's dispatcher
+  (2026-10-23/24); no project is named.
+
 ## v0.4.0 (2026-10-20): short router descriptions
 
 - Every skill's front-matter `description` is now a router, not a manual: one
