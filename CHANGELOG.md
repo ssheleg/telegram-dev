@@ -1,4 +1,10 @@
-## v0.5.0 (2026-10-24): a bot under load
+## v0.5.1 (2026-10-24): a bot under load
+
+- **Why 0.5.1 and not 0.5.0:** a `v0.5.0` tag was pushed by mistake on the
+  previous `main` commit, before this change had merged. Its release run was
+  cancelled before anything was published (npm stayed at 0.4.0, no GitHub
+  release), and the repository rules keep tags, so that tag stays and names no
+  release. Nothing was ever published as 0.5.0.
 
 - **`telegram-bots`: new reference `references/high-load.md`.** One slow update
   must not hold every chat. Telegraf 4.16.3 awaits `Promise.all` over the whole
