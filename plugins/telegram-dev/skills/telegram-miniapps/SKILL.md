@@ -1,12 +1,10 @@
 ---
 name: telegram-miniapps
 description: >-
-  Use when building or auditing a Telegram Mini App, a web page opened inside Telegram:
-  server-side initData verification, session exchange, sendData and Stars payments inside
-  the app, viewport and safe areas. Not for the bot behind it (telegram-bots) or user
-  accounts (telegram-userbots). Opt out: no telegram, без телеграма. Triggers - "mini app",
-  "initData", "initDataUnsafe", "telegram web app", "tma.js", "мини-апп", "телеграм
-  веб-апп", "валидация initData".
+  Use when building or auditing a Telegram Mini App: server-side initData verification,
+  sendData, in-app Stars payments, viewport and safe areas. Not for the bot
+  (telegram-bots) or user accounts (telegram-userbots). Opt out: no telegram, без
+  телеграма. Triggers - "mini app", "initData", "мини-апп".
 license: MIT
 compatibility: Fixtures run with python3 (standard library only)
 ---
@@ -233,3 +231,6 @@ typed errors before upgrading from 3.0.x.
 ## Triggers
 
 More phrases that route here: "miniapp", "WebAppData", "@telegram-apps/sdk".
+
+Moved here from the description in 0.5.4: "telegram web app", "телеграм веб-апп",
+"валидация initData".

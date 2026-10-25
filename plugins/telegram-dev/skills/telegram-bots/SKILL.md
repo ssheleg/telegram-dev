@@ -1,11 +1,10 @@
 ---
 name: telegram-bots
 description: >-
-  Use when building, adding or auditing a Telegram bot on the HTTP Bot API: polling or
-  webhooks, update dedup, keyboards, Telegram Stars payments, files and rate limits. Not for
-  user accounts (telegram-userbots) or the web layer (telegram-miniapps). Opt out: no
-  telegram, без телеграма. Triggers - "telegram bot", "bot api", "aiogram", "setWebhook",
-  "telegram stars", "телеграм бот", "вебхук телеграм", "звёзды телеграм".
+  Use when building or auditing a Telegram bot on the Bot API: polling or webhooks,
+  update dedup, Stars payments, rate limits. Not for user accounts (telegram-userbots)
+  or Mini Apps (telegram-miniapps). Opt out: no telegram, без телеграма. Triggers -
+  "telegram bot", "aiogram", "телеграм бот".
 license: MIT
 compatibility: Fixtures run with python3 (standard library only)
 ---
@@ -229,3 +228,5 @@ outside Telegram. A block then costs a channel, not the user list.
 
 More phrases that route here: "grammy", "telegraf", "python-telegram-bot", "getUpdates",
 "pre_checkout_query", "high load bot", "бот тормозит", "бот апи", "Telegram-бот", "Telegram-бота", "телеграм-бота".
+
+Moved here from the description in 0.5.4: "вебхук телеграм", "звёзды телеграм".

@@ -1,3 +1,11 @@
+## v0.5.4: descriptions within a 300-character budget (2026-10-25)
+
+- **Done.** Every skill description cut to at most 300 characters (hub B-255 (a)); total 1322 → 885
+  characters, whitespace collapsed. Dropped quoted triggers moved to each body's `## Triggers`.
+  Per-skill numbers are in CHANGELOG.md.
+- **Next task.** After merge: tag `v0.5.4`, watch the release, then the sshlg-skills pin bump; then
+  the highest open board row.
+
 # telegram-dev: handoff
 
 ## 2026-10-20: v0.4.0, short router descriptions
