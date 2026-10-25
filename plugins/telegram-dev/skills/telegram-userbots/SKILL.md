@@ -1,12 +1,10 @@
 ---
 name: telegram-userbots
 description: >-
-  Use when a Telegram job needs a user account rather than a bot token: reading history a
-  bot cannot see, acting as a person, bulk export with Telethon or another MTProto client,
-  and the ban risk that comes with it. Not for ordinary bots (telegram-bots) or the web
-  layer (telegram-miniapps). Opt out: no telegram, без телеграма. Triggers - "telethon",
-  "pyrogram", "mtproto", "userbot", "FloodWaitError", "юзербот", "мтпрото", "сессия
-  телеграм".
+  Use when a Telegram job needs a user account, not a bot token: history a bot cannot
+  see, acting as a person, bulk export over MTProto, and the ban risk. Not for bots
+  (telegram-bots) or Mini Apps (telegram-miniapps). Opt out: no telegram, без телеграма.
+  Triggers - "telethon", "userbot", "юзербот".
 license: MIT
 ---
 
@@ -182,3 +180,5 @@ serve.
 ## Triggers
 
 More phrases that route here: "user account", "read channel history", "api_hash", "телетон".
+
+Moved here from the description in 0.5.4: "pyrogram", "мтпрото", "сессия телеграм".

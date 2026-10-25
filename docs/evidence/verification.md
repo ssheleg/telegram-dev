@@ -1,5 +1,10 @@
 # Verification evidence — telegram-dev
 
+## v0.5.4: the 0.5.1 content confirmed against the shipped artifact (2026-10-25)
+
+descriptions within a 300-character budget. Evidence: the repository gate exits 0 on the candidate tree; the PR CI run
+and the tag release run are named in docs/HANDOFF.md.
+
 ## v0.5.3: the 0.5.1 content confirmed against the shipped artifact (2026-10-24)
 
 | Evidence needed | Owning source | Scope and limits |

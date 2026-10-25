@@ -1,3 +1,15 @@
+## v0.5.4 (2026-10-25): descriptions within a 300-character budget
+
+- Every skill description now fits a budget of about 300 characters (hub board row B-255 (a)):
+  Claude Code lists every installed skill's description each session against a shared budget of
+  about 30,000 characters, and the operator's listing measured 51,178, so less-used skills lost
+  their descriptions. Measured with whitespace collapsed: `telegram-bots` 419 → 291,
+  `telegram-miniapps` 461 → 297, `telegram-userbots` 442 → 297; total 1322 → 885.
+- Each description keeps its router sentence, its boundary against sibling skills, the opt-out
+  phrase and a short English and Russian trigger list. Every quoted trigger the description
+  dropped is kept in the body's `## Triggers` section, so the family hook's words stay advertised
+  (`test/advertised_check.js` in the hub).
+
 ## v0.5.3 (2026-10-24): the ledger change, released
 
 - The same content as 0.5.2, released under an annotated tag. `v0.5.2` was pushed
