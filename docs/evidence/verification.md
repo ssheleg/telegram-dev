@@ -1,5 +1,18 @@
 # Verification evidence — telegram-dev
 
+## v0.5.5: version re-pins read from their primary sources (2026-11-11)
+
+| Claim | Source read on 2026-11-11 | Scope |
+|---|---|---|
+| Bot API 10.4 released 2026-11-09 and is the latest; widgets, `widget_query`, `shared_widget_query` | `https://core.telegram.org/bots/api-changelog.md`, `https://core.telegram.org/bots/api/types/update.md` | `telegram-bots/SKILL.md` |
+| The default `allowed_updates` excludes `chat_member`, `message_reaction`, `message_reaction_count` | `https://core.telegram.org/bots/api/methods/setwebhook.md`, `.../getupdates.md` | `telegram-bots/SKILL.md` |
+| 10.4 changed nothing in Mini Apps | the 10.4 section of the changelog names no Mini App change; `bots/webapps.md` lists 10.1 as its latest change | `telegram-miniapps/SKILL.md` |
+| Telethon 1.45.0 is the latest; layer 229, one reconnect fix | `https://pypi.org/pypi/Telethon/json`; `readthedocs/misc/changelog.rst` on `codeberg.org/Lonami/Telethon` branch `v1` | `telegram-userbots/SKILL.md` |
+| Every cited Telethon class and error exists in 1.45.0; no client code handles `future_auth_token` | the `telethon-1.45.0` wheel from PyPI: `telethon/tl/functions/{account,auth}.py`, `telethon/tl/types/`, `telethon/errors/rpcerrorlist.py`, `telethon/client/` | userbots skill and `references/sessions-and-auth.md` |
+
+The repository gate (`npm test`) exits 0 on the candidate tree; the PR and release runs are named
+in the PR.
+
 ## v0.5.4: the 0.5.1 content confirmed against the shipped artifact (2026-10-25)
 
 descriptions within a 300-character budget. Evidence: the repository gate exits 0 on the candidate tree; the PR CI run

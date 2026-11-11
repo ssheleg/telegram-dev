@@ -45,4 +45,4 @@ body:
     attributes:
       label: Before filing
       options:
-        - label: "I checked `~/.claude/skills/` for a plain copy shadowing the plugin — the usual cause of \"it behaves like the old version\""
+        - label: "I checked `~/.claude/skills/` for a plain copy shadowing the plugin (the usual cause of \"it behaves like the old version\")"

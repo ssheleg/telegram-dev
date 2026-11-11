@@ -1,3 +1,26 @@
+## v0.5.5 (2026-11-11): Bot API 10.4, Telethon 1.45.0, neutral survey wording
+
+- `telegram-bots` is pinned to Bot API 10.4 (released 2026-11-09, the latest on
+  `core.telegram.org/bots/api-changelog` when checked on 2026-11-11), with a one-line note of
+  what is new and relevant: HTML widgets (`sendWidget`, `answerWidgetQuery`) and the update
+  types `widget_query` and `shared_widget_query`. The "still the latest" phrasing is gone. The
+  default `allowed_updates` exclusions (`chat_member`, `message_reaction`,
+  `message_reaction_count`) were re-read on the live `setWebhook` and `getUpdates` pages the
+  same day and still hold.
+- `telegram-miniapps` records the 2026-11-11 re-check: 10.4 changed nothing in Mini Apps.
+- `telegram-userbots` records the 2026-11-11 check against Telethon 1.45.0 (layer 229, the
+  latest on PyPI). Its changelog entry adds one reconnect fix; every Telethon class and error
+  name the skill cites was found in the 1.45.0 wheel, and the client still neither stores nor
+  sends `future_auth_token`. No doctrine changed.
+- The field surveys are described neutrally ("eight production bots surveyed") instead of naming
+  the machine they were measured on, since this repository is public.
+- Printed strings and contributor templates carry no em dash: the installer's messages, the two
+  fixtures' printed lines, the pull request and bug report templates. The pull request
+  template's `npm test` line named test files this repository does not have; it now lists the
+  real gate.
+- `test/evals/RESULTS.md` and `SKILL-CARD.md` say the last eval run measured 0.1.10 with
+  unversioned model names and predates the current version. Not re-run.
+
 ## v0.5.4 (2026-10-25): descriptions within a 300-character budget
 
 - Every skill description now fits a budget of about 300 characters (hub board row B-255 (a)):

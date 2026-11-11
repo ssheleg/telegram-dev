@@ -354,7 +354,7 @@ def _(store, handler):
     handler.deliver(dict(UPDATE_A))             # no 200 left the process, so Telegram retries
     handler.run_workers()
     assert store.work == [UPDATE_A["update_id"]], (
-        "the redelivery was answered 'duplicate' and nothing ever did the work — "
+        "the redelivery was answered 'duplicate' and nothing ever did the work: "
         "a duplicate is an answer about a done row, not about a receipt"
     )
 
@@ -374,7 +374,7 @@ def _(store, handler):
         "the crash did not interrupt before the done mark"
     handler.run_workers()                        # the retry
     assert len(store.sent) == 1, (
-        f"the reply reached the user {len(store.sent)} times — a crash between the send "
+        f"the reply reached the user {len(store.sent)} times: a crash between the send "
         "and the done mark doubled it on retry"
     )
 
@@ -442,10 +442,10 @@ def main(argv):
         return 1
 
     if not self_test:
-        print(f"OK ({len(INVARIANTS)} checks — update delivery, 429 and the payment grant)")
+        print(f"OK ({len(INVARIANTS)} checks: update delivery, 429 and the payment grant)")
         return 0
 
-    print("mutant matrix — each invariant must go red when its own rule is removed\n")
+    print("mutant matrix: each invariant must go red when its own rule is removed\n")
     broken = []
     for id_, breaks, fn in INVARIANTS:
         for rule in breaks:
@@ -459,7 +459,7 @@ def main(argv):
     if broken:
         print(f"\nFAIL: {len(broken)} invariant(s) cannot fail, so they prove nothing")
         return 1
-    print(f"\nself-test OK — {len(INVARIANTS)} invariants, each watched failing")
+    print(f"\nself-test OK: {len(INVARIANTS)} invariants, each watched failing")
     return 0
 
 

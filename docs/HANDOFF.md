@@ -1,3 +1,12 @@
+## v0.5.5: Bot API 10.4 re-pin and audit fixes (2026-11-11)
+
+- **Done.** Audit findings T1, T3, T4, T5 and T2 of the 2026-11-11 family audit; details in
+  CHANGELOG.md. Sources and dates are in docs/evidence/verification.md.
+- **Checked, nothing to change.** No skill instructs an agent to send the operator's own
+  messages through a product bot or another client.
+- **Next task.** After merge: tag `v0.5.5`, watch the release; the sshlg-skills pin bump is the
+  hub's task.
+
 ## v0.5.4: descriptions within a 300-character budget (2026-10-25)
 
 - **Done.** Every skill description cut to at most 300 characters (hub B-255 (a)); total 1322 → 885

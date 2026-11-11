@@ -87,7 +87,8 @@ code: an `AuthKeyUnregisteredError` or an unauthorised state on the next call.
 
 *Read against `core.telegram.org` (`/api/auth`, `/api/qr-login`, `/api/links`,
 `/api/config` and the method pages named below) and `fragment.com/about` on
-2026-10-19; Telethon names checked in the 1.44.0 wheel the same day.*
+2026-10-19; Telethon names checked in the 1.44.0 wheel the same day and again
+in the 1.45.0 wheel on 2026-11-11.*
 
 **Log Out is not a lockout.** `auth.logOut` may return a `future_auth_token`,
 and a client is told to keep up to 20 of them. When that client later calls
@@ -96,7 +97,7 @@ an unexpired token skips the login code: with no two-step password the call
 answers "authorized" outright, with one it asks only for the password. A device
 that logged out cleanly can therefore come back without a code, and **the
 two-step password is what still stands in its way.** (The Telethon 1.44.0
-client neither stores nor sends these tokens; an official app is a different
+and 1.45.0 clients neither store nor send these tokens; an official app is a different
 client.)
 
 **Terminating a session is the revocation, and it is done from another one.**
@@ -145,7 +146,7 @@ a two-step password so the code alone is not the account.
 ## Version pinning
 
 Telethon minor releases have changed session format and entity-cache behaviour.
-Four bots in this estate pin `telethon==1.37.0` deliberately while a fifth runs
+Of five production bots surveyed, four pin `telethon==1.37.0` deliberately while a fifth runs
 `1.44.0`, and the pin's reason is in the requirements file beside it.
 
 Pin the exact version. Upgrade one bot at a time, with a session you can

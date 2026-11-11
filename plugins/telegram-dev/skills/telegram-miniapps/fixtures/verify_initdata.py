@@ -316,7 +316,7 @@ def main(argv: list[str]) -> int:
         for f in failures:
             print(f"FAIL: {f}")
         return 1
-    print(f"OK ({len(CHECKS)} checks — every rule watched refusing its own defect)")
+    print(f"OK ({len(CHECKS)} checks: every rule watched refusing its own defect)")
     return 0
 
 

@@ -73,6 +73,6 @@ if [ "$count" -eq 0 ]; then
   exit 1
 fi
 
-echo "Installed $count skill(s). Restart your agent — skills load at session start."
+echo "Installed $count skill(s). Restart your agent: skills load at session start."
 # The last line says how the next version arrives.
 echo "Updates: git pull && ./install.sh --force, or npx --yes sshlg-skills@latest update"

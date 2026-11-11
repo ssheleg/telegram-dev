@@ -5,6 +5,12 @@ first behavioral measurements of this pack; before them this file said
 "authored, never executed" — and said so on purpose, because CI proves shape,
 not behavior.
 
+> **Stale, noted 2026-11-11.** The last run measured version 0.1.10, with
+> unversioned model names (`claude-haiku`, `claude-sonnet`), and predates the
+> current version: the three descriptions were rewritten since (0.5.4 set a
+> 300-character budget). Not re-run; read the rows as history, not as the
+> current trigger rate.
+
 | Date | Version | Model | Trigger pass rate (train / validation) | Scenario lines passed | Installed alongside | Notes |
 |---|---|---|---|---|---|---|
 | 2026-08-31 | 0.1.10 | claude-haiku | 17/18 / 18/18 (35/36 cases) | 6/12 (s01 1/4, s02 2/4, s03 3/4) | ssheleg family, 28 skills (see Method) | Never loaded a skill in the scenarios (0 tool calls each) — missed exactly the seams the pack documents |
