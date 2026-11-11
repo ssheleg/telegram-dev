@@ -16,7 +16,9 @@ string is the only proof of who the user is, and it is signed with your bot
 token.** Verify it on your server and you have authentication as strong as the
 bot itself; trust the parsed object the SDK hands you and you have none.
 
-*Read against `core.telegram.org/bots/webapps` on 2026-08-25, Bot API **10.3**.*
+*Read against `core.telegram.org/bots/webapps` on 2026-08-25, Bot API 10.3.
+Re-checked 2026-11-11 against Bot API **10.4** (2026-11-09, the latest as of
+that date): 10.4 changed nothing in Mini Apps.*
 
 Deep material, loaded on demand:
 

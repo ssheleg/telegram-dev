@@ -50,5 +50,7 @@ guarantee. Read it before editing a guarded file: `CHANGELOG.md`,
 Every version, limit and parameter name in the skills carries the date it was
 read. Bot API **10.3** (2026-08-24), Telethon **1.44.0**, `core.telegram.org`
 2026-08-25; the v0.3.0 additions were read on 2026-10-19 and their sources
-are listed in `docs/evidence/feed-1019/README.md`. The baseline the pack was written against is eight live Telegram bots
-on the author's machine, measured the same day — not imagined problems.
+are listed in `docs/evidence/feed-1019/README.md`. Re-pinned on 2026-11-11 to Bot API
+**10.4** and Telethon **1.45.0**; sources in `docs/evidence/verification.md`. The
+baseline the pack was written against is eight production bots surveyed the same
+day, not imagined problems.

@@ -15,7 +15,9 @@ being** — the same authority the person has, held in a file, with none of the
 protections a token has. Everything in this skill follows from that one
 difference.
 
-*Read against Telethon **1.44.0** and `core.telegram.org` on 2026-08-25. Telethon
+*Read against Telethon 1.44.0 and `core.telegram.org` on 2026-08-25; checked
+2026-11-11 against Telethon **1.45.0** (layer 229, latest on PyPI that day),
+whose notes contradict nothing here. Telethon
 minor releases change session and entity-cache behaviour; the version you are on
 is a fact to check, not to assume.*
 
@@ -84,9 +86,9 @@ client = TelegramClient(
   `tg://login?token=` link logs in whoever generated it. List, watch
   (`UpdateNewAuthorization`) and terminate sessions:
   [`references/sessions-and-auth.md`](references/sessions-and-auth.md#what-logging-out-ends-and-the-session-that-is-not-yours).
-- Verified on this machine on 2026-08-25: five of five Telethon projects
-  gitignore the session and **none has one tracked in git** — the one trap this
-  estate has actually closed. Keep it closed.
+- Verified across five production Telethon projects surveyed on 2026-08-25:
+  all five gitignore the session and **none has one tracked in git**, the one
+  trap they had all closed. Keep it closed.
 
 ## `FloodWaitError` is the API working
 
@@ -110,13 +112,13 @@ except FloodWaitError as e:
   limit becomes a ban. Cap it, alert, stop.
 - **Sleeping inside a request handler is how one flood becomes an outage.** The
   wait belongs in a worker with a queue, not in the path a user is waiting on.
-- Measured across six Telethon projects here on 2026-08-25: **three of six handle
+- Measured across six production Telethon projects surveyed on 2026-08-25: **three of six handle
   `FloodWaitError` at all.** The other three run until the first limit and then
   stop, in whatever state they were in.
 
 ## Pin the minor, and know why
 
-Four bots in this estate pin `telethon==1.37.0` while a fifth runs `1.44.0`, and
+Of five production bots surveyed, four pin `telethon==1.37.0` while a fifth runs `1.44.0`, and
 the pin carries its reason in `requirements.txt`: *minor releases change session
 and entity-cache behaviour, and a jump of seven minors on a live bot needs its own
 change with its own verification.*

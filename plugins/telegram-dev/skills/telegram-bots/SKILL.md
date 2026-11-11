@@ -20,10 +20,13 @@ after a crash, the member event that never arrives because of a default nobody
 read, the payment confirmed from the wrong signal, the broadcast that trips 429
 at user 31 and silently stops.
 
-*Read against the Bot API on 2026-08-25, at version **10.3** (released
-2026-08-24). Re-check `core.telegram.org/bots/api-changelog` before quoting a
-version: this API ships roughly monthly. Re-checked 2026-10-19: 10.3 is still
-the latest. For a machine to read, Telegram serves the docs as Markdown at the
+*Read against the Bot API on 2026-08-25 at version 10.3; pinned to **10.4**
+(released 2026-11-09), the latest as of 2026-11-11 (checked 2026-11-11). New
+in 10.4 and relevant here: HTML widgets (`sendWidget`, `answerWidgetQuery`) and
+two update types, `widget_query` and `shared_widget_query`, which a bot that
+names its `allowed_updates` (as below) must add. Re-check
+`core.telegram.org/bots/api-changelog` before quoting a version: this API ships
+roughly monthly. For a machine to read, Telegram serves the docs as Markdown at the
 same path plus `.md`: `core.telegram.org/bots/api.md`, one file per method
 (`/bots/api/methods/getupdates.md`) and a types index (`/bots/api/types.md`).
 That is official and parseable, but it is Markdown, not a JSON schema.*
@@ -99,7 +102,7 @@ async def webhook(update: Update, db) -> web.Response:
 - **Updates are kept for 24 hours** and no longer. A bot that is down for a day
   has lost them, and nothing will say so — reconcile from your own state, never
   from the assumption that the queue drained.
-- Measured across eight live Telegram bots on this machine on 2026-08-25:
+- Measured across eight production bots surveyed on 2026-08-25:
   **zero of eight deduplicate on `update_id`.** Long polling hides it until the
   first crash between "work done" and "offset confirmed".
 

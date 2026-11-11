@@ -114,7 +114,7 @@ function main(argv) {
 
   const skillsRoot = path.join(ROOT, 'plugins/telegram-dev/skills');
   if (!fs.existsSync(skillsRoot)) {
-    console.error(`error: skill sources missing at ${skillsRoot} — corrupted package?`);
+    console.error(`error: skill sources missing at ${skillsRoot} (corrupted package?)`);
     return 1;
   }
 
@@ -124,7 +124,7 @@ function main(argv) {
     .map((e) => e.name)
     .sort();
   if (!names.length) {
-    console.error(`error: no skills found under ${skillsRoot} — corrupted package?`);
+    console.error(`error: no skills found under ${skillsRoot} (corrupted package?)`);
     return 1;
   }
 
@@ -155,7 +155,7 @@ function main(argv) {
       `           claude plugin update ${spec || 'telegram-dev@telegram-dev'}\n` +
       '         Family launcher (updates every member, prunes shadow copies):\n' +
       '           npx --yes sshlg-skills@latest update\n' +
-      '         Pass --force to write the plain copies anyway — a deliberate choice\n' +
+      '         Pass --force to write the plain copies anyway: a deliberate choice\n' +
       '         to run two channels, where the stale one wins.'
     );
     return EXIT_PLUGIN_PRESENT;
